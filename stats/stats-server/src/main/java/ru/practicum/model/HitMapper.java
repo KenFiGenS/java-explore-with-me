@@ -2,8 +2,6 @@ package ru.practicum.model;
 
 import ru.practicum.statsDto.StatsDtoCreate;
 
-import java.time.LocalDateTime;
-
 public class HitMapper {
 
     public static Hit toHit(StatsDtoCreate statsDtoCreate) {

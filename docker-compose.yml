@@ -1,13 +1,33 @@
 version: '3.1'
 services:
   stats-server:
+    build: stats-server
+    image: stats-server-image
+    container_name: stats-server-container
     ports:
       - "9090:9090"
+    depends_on:
+      - stats-db
+    environment:
+      - SPRING_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/stats
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=iamroot
 
   stats-db:
     image: postgres:14-alpine
+    container_name: stats-db-container
+      ports:
+        - "6541:5432"
+      environment:
+        - POSTGRES_PASSWORD=iamroot
+        - POSTGRES_USER=postgres
+        - POSTGRES_DB=stats
 
   ewm-service:
+    build: main-service
+    image: main-service-image
+    container_name: main-service-container
     ports:
       - "8080:8080"
 

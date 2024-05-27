@@ -3,7 +3,6 @@ package ru.practicum.service;
 import ru.practicum.statsDto.StatsDtoCreate;
 import ru.practicum.statsDto.StatsDtoWithHitsCount;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.List;
 
