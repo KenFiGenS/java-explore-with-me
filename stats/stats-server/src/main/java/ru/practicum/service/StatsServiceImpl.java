@@ -8,13 +8,14 @@ import ru.practicum.repository.HitsRepository;
 import ru.practicum.statsDto.StatsDtoCreate;
 import ru.practicum.statsDto.StatsDtoWithHitsCount;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class StatsServiceImpl implements StatsService{
+public class StatsServiceImpl implements StatsService {
     @Autowired
     private HitsRepository hitsRepository;
 
@@ -28,25 +29,50 @@ public class StatsServiceImpl implements StatsService{
         List<Hit> allHits = hitsRepository.findByTimestampIsAfterAndTimestampIsBefore(start, end);
         List<StatsDtoWithHitsCount> result = new ArrayList<>();
         if (!unique) {
-            for (Hit currentHit : allHits) {
-                result.add(new StatsDtoWithHitsCount("ewm-main-service",
-                                currentHit.getUri(),
-                                (int) allHits.stream().filter(h -> uris.contains(currentHit.getUri())).count()
-                        )
-                );
+            if (uris.get(0).equals("all")) {
+                List<String> uniqueUri = allHits.stream().map(Hit::getUri).distinct().collect(Collectors.toList());
+                for (String currentUri : uniqueUri) {
+                    result.add(new StatsDtoWithHitsCount("ewm-main-service",
+                                    currentUri,
+                                    (int) allHits.stream().filter(h -> currentUri.equals(h.getUri())).count()
+                            )
+                    );
+                }
+            } else {
+                for (String currentUri : uris) {
+                    result.add(new StatsDtoWithHitsCount("ewm-main-service",
+                                    currentUri,
+                                    (int) allHits.stream().filter(h -> currentUri.equals(h.getUri())).count()
+                            )
+                    );
+                }
             }
         } else {
-            for (Hit currentHit : allHits) {
-                result.add(new StatsDtoWithHitsCount("ewm-main-service",
-                                currentHit.getUri(),
-                                (int) allHits.stream().filter(h -> uris.contains(currentHit.getUri()))
-                                        .map(Hit::getUri)
-                                        .distinct()
-                                        .count()
-                        )
-                );
+            if (uris.get(0).equals("all")) {
+                List<String> uniqueUri = allHits.stream().map(Hit::getUri).distinct().collect(Collectors.toList());
+                for (String currentUri : uniqueUri) {
+                    result.add(new StatsDtoWithHitsCount("ewm-main-service",
+                                    currentUri,
+                                    (int) allHits.stream().filter(h -> currentUri.equals(h.getUri()))
+                                            .map(Hit::getIp)
+                                            .distinct()
+                                            .count()
+                            )
+                    );
+                }
+            } else {
+                for (String currentUri : uris) {
+                    result.add(new StatsDtoWithHitsCount("ewm-main-service",
+                                    currentUri,
+                                    (int) allHits.stream().filter(h -> currentUri.equals(h.getUri()))
+                                            .map(Hit::getIp)
+                                            .distinct()
+                                            .count()
+                            )
+                    );
+                }
             }
         }
-        return result;
+        return result.stream().sorted(Comparator.comparing(StatsDtoWithHitsCount::getHits).reversed()).collect(Collectors.toList());
     }
 }
