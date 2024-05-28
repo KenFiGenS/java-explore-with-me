@@ -16,8 +16,6 @@
 
   <name>stats-server</name>
 
-  <packaging>jar</packaging>
-
   <dependencies>
 
     <dependency>
