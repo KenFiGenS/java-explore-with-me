@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
@@ -16,7 +15,7 @@ import ru.practicum.statsDto.StatsDtoCreate;
 
 import java.util.List;
 
-@Component
+
 public class HitClient {
     private static final String API_PREFIX = "/hit";
     private RestTemplate restTemplate;
