@@ -19,6 +19,7 @@ public class StatsController {
 
     @PostMapping("/hit")
     public StatsDtoCreate createHit(@RequestBody StatsDtoCreate statsDtoCreate) {
+        log.info("Внесение статистики и запросе ивента: {}, время: {}, от сервиса: {}", statsDtoCreate.getUri(),statsDtoCreate.getTimestamp(), statsDtoCreate.getApp());
         return service.create(statsDtoCreate);
     }
 

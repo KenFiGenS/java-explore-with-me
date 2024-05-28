@@ -1,7 +1,9 @@
 package ru.practicum.model;
 
+import org.springframework.stereotype.Component;
 import ru.practicum.statsDto.StatsDtoCreate;
 
+@Component
 public class HitMapper {
 
     public static Hit toHit(StatsDtoCreate statsDtoCreate) {
