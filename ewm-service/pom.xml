@@ -12,8 +12,6 @@
 
   <artifactId>ewm-service</artifactId>
 
-  <packaging>jar</packaging>
-
   <dependencies>
     <dependency>
       <groupId>ru.practicum</groupId>
