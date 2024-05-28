@@ -12,6 +12,7 @@
 
   <artifactId>ewm-service</artifactId>
 
+
   <dependencies>
     <dependency>
       <groupId>ru.practicum</groupId>
