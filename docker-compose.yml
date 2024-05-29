@@ -19,7 +19,7 @@ services:
     image: postgres:16-alpine
     container_name: stats-db-container
     ports:
-      - "6541:5432"
+      - "6542:5432"
     environment:
       - POSTGRES_PASSWORD=iamroot
       - POSTGRES_USER=postgres
@@ -35,7 +35,7 @@ services:
       - ewm-db
     environment:
       - SPRING_DRIVER_CLASS_NAME=org.postgresql.Driver
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5431/ewm
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5433/ewm
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=iamroot
 
@@ -43,7 +43,7 @@ services:
     image: postgres:16-alpine
     container_name: ewm-db-container
     ports:
-      - "6542:5431"
+      - "4642:5433"
     environment:
       - POSTGRES_PASSWORD=iamroot
       - POSTGRES_USER=postgres
