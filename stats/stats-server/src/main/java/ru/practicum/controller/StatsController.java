@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 public class StatsController {
     @Autowired
-    StatsService service;
+    private StatsService service;
 
     @PostMapping("/hit")
     public StatsDtoCreate createHit(@RequestBody StatsDtoCreate statsDtoCreate) {
