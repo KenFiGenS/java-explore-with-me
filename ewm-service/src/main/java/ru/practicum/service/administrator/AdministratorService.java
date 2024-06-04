@@ -1,7 +1,15 @@
 package ru.practicum.service.administrator;
 
-import ru.practicum.dto.UserDtoCreate;
+import org.springframework.http.HttpStatus;
+import ru.practicum.dto.user.UserDto;
+import ru.practicum.dto.user.UserSearchFilter;
+
+import java.util.List;
 
 public interface AdministratorService {
-    UserDtoCreate createUser(UserDtoCreate userDtoCreate);
+    UserDto createUser(UserDto userDtoCreate);
+
+    List<UserDto> getUsers(UserSearchFilter userSearchFilter);
+
+    void removeUser(int id);
 }
