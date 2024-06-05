@@ -9,9 +9,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.user.UserDto;
-import ru.practicum.dto.user.UserSearchFilter;
 import ru.practicum.service.administrator.AdministratorService;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -30,12 +30,11 @@ public class AdministratorController {
     }
 
     @GetMapping("/users")
-    public List<UserDto> getUsers(UserSearchFilter userSearchFilter) {
-        log.info("Выполняется запрос на получение списка пользователей по параметрам запроса: ids: {}; from: {}; size: {}",
-                userSearchFilter.getIds(),
-                userSearchFilter.getFrom(),
-                userSearchFilter.getSize());
-        return administratorService.getUsers(userSearchFilter);
+    public List<UserDto> getUsers(@RequestParam(defaultValue = "") List<Integer> ids,
+                                  @RequestParam(defaultValue = "0") int from,
+                                  @RequestParam(defaultValue = "10") int size) {
+        log.info("Выполняется запрос на получение списка пользователей по параметрам запроса: ids: {}; from: {}; size: {}", ids, from, size);
+        return administratorService.getUsers(ids, from, size);
     }
 
     @DeleteMapping("/users/{userId}")

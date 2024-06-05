@@ -10,7 +10,6 @@ import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.category.CategoryMapper;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.dto.user.UserMapper;
-import ru.practicum.dto.user.UserSearchFilter;
 import ru.practicum.model.Category;
 import ru.practicum.model.User;
 import ru.practicum.repository.CategoryRepository;
@@ -34,15 +33,15 @@ public class AdministratorServiceImpl implements AdministratorService {
     }
 
     @Override
-    public List<UserDto> getUsers(UserSearchFilter userSearchFilter) {
-        if (userSearchFilter.getIds() != null || !userSearchFilter.getIds().isEmpty()) {
-            List<Specification<User>> specifications = userFilterToSpecification(userSearchFilter);
+    public List<UserDto> getUsers(List<Integer> ids, int from, int size) {
+        if (!ids.isEmpty()) {
+            List<Specification<User>> specifications = userFilterToSpecification(ids);
             return userRepository.findAll(specifications.stream().reduce(Specification::or).orElse(null)).stream()
                     .map(UserMapper::toUserDto)
                     .collect(Collectors.toList());
         } else {
-            int currentPage = userSearchFilter.getFrom() / userSearchFilter.getSize();
-            Pageable pageable = PageRequest.of(currentPage, userSearchFilter.getSize());
+            int currentPage = from / size;
+            Pageable pageable = PageRequest.of(currentPage, size);
             return userRepository.findAll(pageable).stream()
                     .map(UserMapper::toUserDto)
                     .collect(Collectors.toList());
@@ -82,9 +81,9 @@ public class AdministratorServiceImpl implements AdministratorService {
         return CategoryMapper.toCategoryDto(categoryRepository.save(CategoryMapper.toCategory(categoryDto)));
     }
 
-    private List<Specification<User>> userFilterToSpecification(UserSearchFilter userSearchFilter) {
+    private List<Specification<User>> userFilterToSpecification(List<Integer> ids) {
         List<Specification<User>> specifications = new ArrayList<>();
-        specifications.add(idIn(userSearchFilter.getIds()));
+        specifications.add(idIn(ids));
         return specifications;
     }
 
