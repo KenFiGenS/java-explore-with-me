@@ -32,7 +32,7 @@ public class ErrorHandlingControllerAdvice {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public Violation onDataInsertValidException(DataIntegrityViolationException e) {
         log.info("Получен статус 409 CONFLICT {}", e.getMessage(), e);
         return new Violation(e.getStackTrace().toString(),
