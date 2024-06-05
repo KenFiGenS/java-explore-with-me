@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.dto.user.UserSearchFilter;
 import ru.practicum.service.administrator.AdministratorService;
@@ -42,5 +43,25 @@ public class AdministratorController {
         log.info("Запрос на удаление пользователя под id: {}", userId);
         administratorService.removeUser(userId);
         return new ResponseEntity(null, null, HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/categories")
+    public ResponseEntity<CategoryDto> createCategory(@Validated @RequestBody CategoryDto categoryDto) {
+        log.info("Выполняется запрос на создание категории под названием: {}", categoryDto.getName());
+        return new ResponseEntity<>(administratorService.createCategory(categoryDto), null, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/categories/{catId}")
+    public ResponseEntity removeCategory(@PathVariable int catId) {
+        log.info("Запрос на удаление категории под id: {}", catId);
+        administratorService.removeCategory(catId);
+        return new ResponseEntity(null, null, HttpStatus.NO_CONTENT);
+    }
+
+    @PatchMapping("/categories/{catId}")
+    public CategoryDto updateCategory(@Validated @RequestBody CategoryDto categoryDto,
+                                      @PathVariable int catId) {
+        log.info("Выполняется запрос на обновление категории под id: {}, новое название: {}", catId, categoryDto.getName());
+        return administratorService.updateCategory(catId, categoryDto);
     }
 }

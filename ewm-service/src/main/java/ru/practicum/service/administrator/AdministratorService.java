@@ -1,6 +1,7 @@
 package ru.practicum.service.administrator;
 
 import org.springframework.http.HttpStatus;
+import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.dto.user.UserSearchFilter;
 
@@ -12,4 +13,10 @@ public interface AdministratorService {
     List<UserDto> getUsers(UserSearchFilter userSearchFilter);
 
     void removeUser(int id);
+
+    CategoryDto createCategory(CategoryDto categoryDto);
+
+    void removeCategory(int catId);
+
+    CategoryDto updateCategory(int catId, CategoryDto categoryDto);
 }
