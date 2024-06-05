@@ -11,7 +11,6 @@ import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.service.administrator.AdministratorService;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j

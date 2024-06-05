@@ -78,6 +78,8 @@ public class AdministratorServiceImpl implements AdministratorService {
     @Override
     public CategoryDto updateCategory(int catId, CategoryDto categoryDto) {
         categoryDto.setId(catId);
+        Category currentCategory = categoryRepository.getReferenceById(catId);
+        if(currentCategory.getName().equals(categoryDto.getName())) return categoryDto;
         return CategoryMapper.toCategoryDto(categoryRepository.save(CategoryMapper.toCategory(categoryDto)));
     }
 
