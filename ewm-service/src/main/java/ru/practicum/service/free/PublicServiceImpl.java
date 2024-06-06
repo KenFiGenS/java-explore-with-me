@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.category.CategoryMapper;
-import ru.practicum.model.Category;
+import ru.practicum.model.category.Category;
 import ru.practicum.repository.CategoryRepository;
 
 import java.util.Arrays;

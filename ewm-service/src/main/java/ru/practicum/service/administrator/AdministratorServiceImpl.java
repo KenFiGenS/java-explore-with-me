@@ -10,8 +10,8 @@ import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.category.CategoryMapper;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.dto.user.UserMapper;
-import ru.practicum.model.Category;
-import ru.practicum.model.User;
+import ru.practicum.model.category.Category;
+import ru.practicum.model.user.User;
 import ru.practicum.repository.CategoryRepository;
 import ru.practicum.repository.UserRepository;
 

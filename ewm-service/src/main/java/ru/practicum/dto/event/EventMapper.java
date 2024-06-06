@@ -1,8 +1,8 @@
 package ru.practicum.dto.event;
 
 import lombok.experimental.UtilityClass;
-import ru.practicum.model.Category;
-import ru.practicum.model.User;
+import ru.practicum.model.category.Category;
+import ru.practicum.model.user.User;
 import ru.practicum.model.event.Event;
 import ru.practicum.model.event.EventStatus;
 import ru.practicum.model.event.Location;

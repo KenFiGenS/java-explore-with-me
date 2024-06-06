@@ -3,8 +3,8 @@ package ru.practicum.model.event;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.model.Category;
-import ru.practicum.model.User;
+import ru.practicum.model.category.Category;
+import ru.practicum.model.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

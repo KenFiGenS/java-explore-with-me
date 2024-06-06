@@ -2,15 +2,17 @@ package ru.practicum.service.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.practicum.dto.event.EventDtoAfterCreate;
 import ru.practicum.dto.event.EventDtoCreate;
 import ru.practicum.dto.event.EventMapper;
-import ru.practicum.model.Category;
-import ru.practicum.model.User;
+import ru.practicum.dto.request.RequestDto;
+import ru.practicum.dto.request.RequestMapper;
+import ru.practicum.model.category.Category;
+import ru.practicum.model.user.User;
 import ru.practicum.model.event.Event;
 import ru.practicum.repository.CategoryRepository;
 import ru.practicum.repository.EventRepository;
+import ru.practicum.repository.RequestRepository;
 import ru.practicum.repository.UserRepository;
 
 import java.time.LocalDateTime;
@@ -23,6 +25,8 @@ public class UserServiceImpl implements UserService {
     CategoryRepository categoryRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    RequestRepository requestRepository;
 
     @Override
     public EventDtoAfterCreate createEvent(int userId, EventDtoCreate eventDtoCreate) {
@@ -34,5 +38,10 @@ public class UserServiceImpl implements UserService {
         Event currentEvent = EventMapper.toEvent(eventDtoCreate, currentCategory, initiator);
         Event currentEventAfterSave = eventRepository.save(currentEvent);
         return EventMapper.toEventDtoAfterCreate(currentEventAfterSave);
+    }
+
+    @Override
+    public RequestDto createRequest(int userId, int requestId) {
+        return RequestMapper.toRequestDto(requestRepository.save(RequestMapper.toRequest(userId, requestId)));
     }
 }

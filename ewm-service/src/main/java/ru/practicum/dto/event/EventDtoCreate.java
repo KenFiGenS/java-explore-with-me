@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.model.User;
+import ru.practicum.model.user.User;
 import ru.practicum.model.event.Location;
 
 import javax.validation.constraints.Future;
