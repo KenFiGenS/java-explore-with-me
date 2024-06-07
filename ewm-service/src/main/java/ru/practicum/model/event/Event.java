@@ -37,6 +37,8 @@ public class Event {
     private EventStatus state;
     @Column(name = "CREATED_ON")
     private LocalDateTime createdOn;
+    @Column(name = "PUBLISHED_ON")
+    private LocalDateTime publishedOn;
     private float lat;
     private float lon;
     private boolean requestModeration;

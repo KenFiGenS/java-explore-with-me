@@ -47,4 +47,15 @@ public class ErrorHandlingControllerAdvice {
         log.info("Получен статус 404 NOT_FOUND {}", e.getMessage(), e);
         return new ResponseEntity(null, null, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Violation onServiceIllegalArgumentException(IllegalArgumentException e) {
+        log.info("Получен статус 409 CONFLICT {}", e.getMessage(), e);
+        return new Violation(e.getStackTrace().toString(),
+                "FORBIDDEN",
+                "For the requested operation the conditions are not met.",
+                e.getMessage(),
+                LocalDateTime.now().format(DATE_TIME_FORMATTER));
+    }
 }

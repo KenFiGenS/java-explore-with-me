@@ -27,6 +27,7 @@ public class EventMapper {
                 eventDtoCreate.getParticipantLimit(),
                 EventStatus.WAITING,
                 LocalDateTime.now(),
+                null,
                 eventDtoCreate.getLocation().getLat(),
                 eventDtoCreate.getLocation().getLon(),
                 eventDtoCreate.isRequestModeration()
@@ -46,6 +47,7 @@ public class EventMapper {
                 event.getParticipantLimit(),
                 EventStatus.WAITING,
                 event.getCreatedOn(),
+                event.getPublishedOn() !=null ? event.getPublishedOn() : null,
                 new Location(event.getLat(), event.getLon()),
                 event.isRequestModeration(),
                 0,

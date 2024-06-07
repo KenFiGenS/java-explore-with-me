@@ -8,6 +8,8 @@ import ru.practicum.dto.event.EventMapper;
 import ru.practicum.dto.request.RequestDto;
 import ru.practicum.dto.request.RequestMapper;
 import ru.practicum.model.category.Category;
+import ru.practicum.model.event.EventStatus;
+import ru.practicum.model.request.Request;
 import ru.practicum.model.user.User;
 import ru.practicum.model.event.Event;
 import ru.practicum.repository.CategoryRepository;
@@ -16,6 +18,7 @@ import ru.practicum.repository.RequestRepository;
 import ru.practicum.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -41,7 +44,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public RequestDto createRequest(int userId, int requestId) {
-        return RequestMapper.toRequestDto(requestRepository.save(RequestMapper.toRequest(userId, requestId)));
+    public RequestDto createRequest(int userId, int eventId) {
+        Event currentEvent = eventRepository.getReferenceById(eventId);
+        List<Request> requestsByEventId = requestRepository.findByEvent(eventId);
+        if (userId == currentEvent.getInitiator().getId()) {
+            throw new IllegalArgumentException("The user is the initiator of this event");
+        }
+        if (!currentEvent.getState().equals(EventStatus.PUBLISHED)) {
+            throw new IllegalArgumentException("The event has not been published yet");
+        }
+        if (currentEvent.getParticipantLimit() < requestsByEventId.size() + 1) {
+            throw new IllegalArgumentException("The event gathered the maximum number of participants");
+        }
+        return RequestMapper.toRequestDto(requestRepository.save(RequestMapper.toRequest(userId, eventId)));
     }
 }

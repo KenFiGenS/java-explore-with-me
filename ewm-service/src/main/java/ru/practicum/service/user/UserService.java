@@ -8,5 +8,5 @@ import ru.practicum.model.event.Event;
 public interface UserService {
     EventDtoAfterCreate createEvent(int userId, EventDtoCreate eventDtoCreate);
 
-    RequestDto createRequest(int userId, int requestId);
+    RequestDto createRequest(int userId, int eventId);
 }

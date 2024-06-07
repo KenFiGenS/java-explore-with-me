@@ -28,6 +28,8 @@ public class EventDtoAfterCreate {
     private EventStatus state;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdOn;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime publishedOn;
     private Location location;
     private boolean requestModeration;
     private int confirmedRequests;

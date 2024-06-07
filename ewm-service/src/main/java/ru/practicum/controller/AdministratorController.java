@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.category.CategoryDto;
+import ru.practicum.dto.event.EventDtoAdminUpdate;
+import ru.practicum.dto.event.EventDtoAfterCreate;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.service.administrator.AdministratorService;
 
@@ -61,5 +63,13 @@ public class AdministratorController {
                                       @PathVariable int catId) {
         log.info("Выполняется запрос на обновление категории под id: {}, новое название: {}", catId, categoryDto.getName());
         return administratorService.updateCategory(catId, categoryDto);
+    }
+
+    @PatchMapping("/events/{eventId}")
+    public EventDtoAfterCreate updateEvent(@RequestBody EventDtoAdminUpdate eventDtoAdminUpdate,
+                                                           @PathVariable int eventId) {
+        log.info("Выполняется запрос на обновление события под id: {}", eventId);
+        EventDtoAfterCreate eventDtoAfterUpdate = administratorService.updateEvent(eventId, eventDtoAdminUpdate);
+        return eventDtoAfterUpdate;
     }
 }
