@@ -25,7 +25,7 @@ public class EventMapper {
                 user,
                 eventDtoCreate.getDescription(),
                 eventDtoCreate.getParticipantLimit(),
-                EventStatus.WAITING,
+                EventStatus.PENDING,
                 LocalDateTime.now(),
                 null,
                 eventDtoCreate.getLocation().getLat(),
@@ -34,8 +34,8 @@ public class EventMapper {
         );
     }
 
-    public static EventDtoAfterCreate toEventDtoAfterCreate(Event event) {
-        return new EventDtoAfterCreate(
+    public static EventDtoForResponse toEventDtoAfterCreate(Event event) {
+        return new EventDtoForResponse(
                 event.getId(),
                 event.getTitle(),
                 event.getAnnotation(),
@@ -45,7 +45,7 @@ public class EventMapper {
                 event.getInitiator(),
                 event.getDescription(),
                 event.getParticipantLimit(),
-                EventStatus.WAITING,
+                event.getState() == null ? EventStatus.PENDING : event.getState(),
                 event.getCreatedOn(),
                 event.getPublishedOn() !=null ? event.getPublishedOn() : null,
                 new Location(event.getLat(), event.getLon()),

@@ -2,9 +2,7 @@ package ru.practicum.service.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.dto.event.EventDtoAfterCreate;
-import ru.practicum.dto.event.EventDtoCreate;
-import ru.practicum.dto.event.EventMapper;
+import ru.practicum.dto.event.*;
 import ru.practicum.dto.request.RequestDto;
 import ru.practicum.dto.request.RequestMapper;
 import ru.practicum.model.category.Category;
@@ -32,7 +30,7 @@ public class UserServiceImpl implements UserService {
     RequestRepository requestRepository;
 
     @Override
-    public EventDtoAfterCreate createEvent(int userId, EventDtoCreate eventDtoCreate) {
+    public EventDtoForResponse createEvent(int userId, EventDtoCreate eventDtoCreate) {
         if (eventDtoCreate.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
             throw new IllegalArgumentException("Дата начала события менее чем через 2 часа");
         }
@@ -57,5 +55,43 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("The event gathered the maximum number of participants");
         }
         return RequestMapper.toRequestDto(requestRepository.save(RequestMapper.toRequest(userId, eventId)));
+    }
+
+    @Override
+    public EventDtoForResponse updateRequest(int userId, int eventId, EventDtoUserUpdate eventDtoUserUpdate) {
+        Event eventForUpdate = eventRepository.getReferenceById(eventId);
+        if (eventDtoUserUpdate.getAnnotation() != null) eventForUpdate.setAnnotation(eventDtoUserUpdate.getAnnotation());
+        if (eventDtoUserUpdate.getCategory() != 0) {
+            Category categoryForUpdate = categoryRepository.getReferenceById(eventDtoUserUpdate.getCategory());
+            eventForUpdate.setCategory(categoryForUpdate);
+        }
+        if (eventDtoUserUpdate.getDescription() != null)eventForUpdate.setDescription(eventDtoUserUpdate.getDescription());
+        if (eventDtoUserUpdate.getEventDate() != null) {
+            if (eventDtoUserUpdate.getEventDate().isAfter(LocalDateTime.now().plusHours(2))) {
+                eventForUpdate.setEventDate(eventDtoUserUpdate.getEventDate());
+            } else {
+                throw new IllegalArgumentException("Время начала события менее чем через 2 часа");
+            }
+        }
+
+        if (eventDtoUserUpdate.getLocation() != null) {
+            eventForUpdate.setLat(eventDtoUserUpdate.getLocation().getLat());
+            eventForUpdate.setLon(eventDtoUserUpdate.getLocation().getLon());
+        }
+        if (eventDtoUserUpdate.getPaid() != null)eventForUpdate.setPaid(eventDtoUserUpdate.getPaid());
+        if (eventDtoUserUpdate.getParticipantLimit() != 0)eventForUpdate.setParticipantLimit(eventDtoUserUpdate.getParticipantLimit());
+        if (eventDtoUserUpdate.getRequestModeration() != null)eventForUpdate.setRequestModeration(eventDtoUserUpdate.getRequestModeration());
+        if (eventDtoUserUpdate.getStateAction() != null) {
+            if (eventForUpdate.getState().equals(EventStatus.PENDING) || eventForUpdate.getState().equals(EventStatus.REJECTED)) {
+                if (eventDtoUserUpdate.getStateAction().equals(StateActionForUser.SEND_TO_REVIEW)) {
+                    eventForUpdate.setState(EventStatus.PENDING);
+                } else {
+                    eventForUpdate.setState(EventStatus.CANCELED);
+                }
+            }
+        }
+        System.out.println(eventForUpdate.getState());
+        if (eventDtoUserUpdate.getTitle() != null)eventForUpdate.setTitle(eventDtoUserUpdate.getTitle());
+        return EventMapper.toEventDtoAfterCreate(eventRepository.save(eventForUpdate));
     }
 }

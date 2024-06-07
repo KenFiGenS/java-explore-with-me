@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventDtoAdminUpdate {
+public class EventDtoUserUpdate {
     private int id;
     private String title;
     private String annotation;
@@ -23,5 +23,5 @@ public class EventDtoAdminUpdate {
     private Boolean paid;
     private int participantLimit;
     private Boolean requestModeration;
-    private StateActionForAdmin stateAction;
+    private StateActionForUser stateAction;
 }

@@ -1,6 +1,6 @@
 package ru.practicum.dto.event;
 
-public enum StateAction {
+public enum StateActionForAdmin {
     PUBLISH_EVENT,
     REJECT_EVENT
 }

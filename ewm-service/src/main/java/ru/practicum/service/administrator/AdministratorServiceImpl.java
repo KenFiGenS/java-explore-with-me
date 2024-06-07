@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.category.CategoryMapper;
 import ru.practicum.dto.event.EventDtoAdminUpdate;
-import ru.practicum.dto.event.EventDtoAfterCreate;
+import ru.practicum.dto.event.EventDtoForResponse;
 import ru.practicum.dto.event.EventMapper;
-import ru.practicum.dto.event.StateAction;
+import ru.practicum.dto.event.StateActionForAdmin;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.dto.user.UserMapper;
 import ru.practicum.model.category.Category;
@@ -79,9 +79,6 @@ public class AdministratorServiceImpl implements AdministratorService {
     @Override
     public void removeCategory(int catId) {
         Category currentCategory = categoryRepository.getReferenceById(catId);
-        System.out.println(currentCategory);
-        Event event = eventRepository.getReferenceById(1);
-        System.out.println(event);
         categoryRepository.deleteById(catId);
 
     }
@@ -96,7 +93,7 @@ public class AdministratorServiceImpl implements AdministratorService {
 
     @Transactional
     @Override
-    public EventDtoAfterCreate updateEvent(int eventId, EventDtoAdminUpdate eventDtoAdminUpdate) {
+    public EventDtoForResponse updateEvent(int eventId, EventDtoAdminUpdate eventDtoAdminUpdate) {
         Event eventForUpdate = eventRepository.getReferenceById(eventId);
         if (eventDtoAdminUpdate.getAnnotation() != null) eventForUpdate.setAnnotation(eventDtoAdminUpdate.getAnnotation());
         if (eventDtoAdminUpdate.getCategory() != 0) {
@@ -119,9 +116,10 @@ public class AdministratorServiceImpl implements AdministratorService {
         if (eventDtoAdminUpdate.getPaid() != null)eventForUpdate.setPaid(eventDtoAdminUpdate.getPaid());
         if (eventDtoAdminUpdate.getParticipantLimit() != 0)eventForUpdate.setParticipantLimit(eventDtoAdminUpdate.getParticipantLimit());
         if (eventDtoAdminUpdate.getRequestModeration() != null)eventForUpdate.setRequestModeration(eventDtoAdminUpdate.getRequestModeration());
-        if (eventDtoAdminUpdate.getStateAction().equals(StateAction.PUBLISH_EVENT)) {
-            if (eventForUpdate.getState().equals(EventStatus.WAITING)) {
+        if (eventDtoAdminUpdate.getStateAction().equals(StateActionForAdmin.PUBLISH_EVENT)) {
+            if (eventForUpdate.getState().equals(EventStatus.PENDING)) {
                 eventForUpdate.setState(EventStatus.PUBLISHED);
+                eventForUpdate.setPublishedOn(LocalDateTime.now());
             } else if (eventForUpdate.getState().equals(EventStatus.PUBLISHED)) {
                 throw new IllegalArgumentException("Cannot publish the event because it's not in the right state: PUBLISHED");
             } else {
@@ -135,7 +133,6 @@ public class AdministratorServiceImpl implements AdministratorService {
             }
         }
         if (eventDtoAdminUpdate.getTitle() != null)eventForUpdate.setTitle(eventDtoAdminUpdate.getTitle());
-        eventForUpdate.setPublishedOn(LocalDateTime.now());
         return EventMapper.toEventDtoAfterCreate(eventRepository.save(eventForUpdate));
     }
 

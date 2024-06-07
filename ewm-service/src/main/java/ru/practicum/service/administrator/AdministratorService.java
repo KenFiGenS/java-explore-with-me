@@ -2,7 +2,7 @@ package ru.practicum.service.administrator;
 
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.event.EventDtoAdminUpdate;
-import ru.practicum.dto.event.EventDtoAfterCreate;
+import ru.practicum.dto.event.EventDtoForResponse;
 import ru.practicum.dto.user.UserDto;
 
 import java.util.List;
@@ -20,5 +20,5 @@ public interface AdministratorService {
 
     CategoryDto updateCategory(int catId, CategoryDto categoryDto);
 
-    EventDtoAfterCreate updateEvent(int eventId, EventDtoAdminUpdate eventDtoAdminUpdate);
+    EventDtoForResponse updateEvent(int eventId, EventDtoAdminUpdate eventDtoAdminUpdate);
 }

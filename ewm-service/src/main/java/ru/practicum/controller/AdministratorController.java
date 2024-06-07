@@ -9,7 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.event.EventDtoAdminUpdate;
-import ru.practicum.dto.event.EventDtoAfterCreate;
+import ru.practicum.dto.event.EventDtoForResponse;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.service.administrator.AdministratorService;
 
@@ -66,10 +66,10 @@ public class AdministratorController {
     }
 
     @PatchMapping("/events/{eventId}")
-    public EventDtoAfterCreate updateEvent(@RequestBody EventDtoAdminUpdate eventDtoAdminUpdate,
-                                                           @PathVariable int eventId) {
+    public EventDtoForResponse updateEvent(@RequestBody EventDtoAdminUpdate eventDtoAdminUpdate,
+                                           @PathVariable int eventId) {
         log.info("Выполняется запрос на обновление события под id: {}", eventId);
-        EventDtoAfterCreate eventDtoAfterUpdate = administratorService.updateEvent(eventId, eventDtoAdminUpdate);
+        EventDtoForResponse eventDtoAfterUpdate = administratorService.updateEvent(eventId, eventDtoAdminUpdate);
         return eventDtoAfterUpdate;
     }
 }

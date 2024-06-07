@@ -7,8 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.dto.event.EventDtoAfterCreate;
+import ru.practicum.dto.event.EventDtoForResponse;
 import ru.practicum.dto.event.EventDtoCreate;
+import ru.practicum.dto.event.EventDtoUserUpdate;
 import ru.practicum.dto.request.RequestDto;
 import ru.practicum.service.user.UserService;
 
@@ -22,7 +23,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/{userId}/events")
-    public ResponseEntity<EventDtoAfterCreate> createEvent(@PathVariable int userId, @Validated @RequestBody EventDtoCreate eventDtoCreate) {
+    public ResponseEntity<EventDtoForResponse> createEvent(@PathVariable int userId, @Validated @RequestBody EventDtoCreate eventDtoCreate) {
         log.info("Запрос на создание события: {}", eventDtoCreate.getTitle());
         return new ResponseEntity<>(userService.createEvent(userId, eventDtoCreate), null, HttpStatus.CREATED);
     }
@@ -33,4 +34,11 @@ public class UserController {
         return new ResponseEntity<>(userService.createRequest(userId, eventId), null, HttpStatus.CREATED);
     }
 
+    @PatchMapping("/{userId}/events/{eventId}")
+    public EventDtoForResponse updateRequest(@PathVariable int userId,
+                                             @PathVariable int eventId,
+                                             @RequestBody EventDtoUserUpdate eventDtoUserUpdate) {
+        log.info("Запрос на обновление события под id: {}, от пользователя под id {}", eventId, userId);
+        return userService.updateRequest(userId, eventId, eventDtoUserUpdate);
+    }
 }
