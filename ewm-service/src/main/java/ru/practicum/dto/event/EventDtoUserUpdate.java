@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.model.event.Location;
 
+import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 
 @Data

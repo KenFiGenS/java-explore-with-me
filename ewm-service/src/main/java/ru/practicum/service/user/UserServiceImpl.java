@@ -60,6 +60,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public EventDtoForResponse updateRequest(int userId, int eventId, EventDtoUserUpdate eventDtoUserUpdate) {
         Event eventForUpdate = eventRepository.getReferenceById(eventId);
+        if (eventForUpdate.getState().equals(EventStatus.PUBLISHED)) {
+            throw new IllegalArgumentException("Cannot update the event because it's not in the right state: PUBLISHED");
+        }
         if (eventDtoUserUpdate.getAnnotation() != null) eventForUpdate.setAnnotation(eventDtoUserUpdate.getAnnotation());
         if (eventDtoUserUpdate.getCategory() != 0) {
             Category categoryForUpdate = categoryRepository.getReferenceById(eventDtoUserUpdate.getCategory());
@@ -79,18 +82,15 @@ public class UserServiceImpl implements UserService {
             eventForUpdate.setLon(eventDtoUserUpdate.getLocation().getLon());
         }
         if (eventDtoUserUpdate.getPaid() != null)eventForUpdate.setPaid(eventDtoUserUpdate.getPaid());
-        if (eventDtoUserUpdate.getParticipantLimit() != 0)eventForUpdate.setParticipantLimit(eventDtoUserUpdate.getParticipantLimit());
+        if (eventDtoUserUpdate.getParticipantLimit() > 0)eventForUpdate.setParticipantLimit(eventDtoUserUpdate.getParticipantLimit());
         if (eventDtoUserUpdate.getRequestModeration() != null)eventForUpdate.setRequestModeration(eventDtoUserUpdate.getRequestModeration());
         if (eventDtoUserUpdate.getStateAction() != null) {
-            if (eventForUpdate.getState().equals(EventStatus.PENDING) || eventForUpdate.getState().equals(EventStatus.REJECTED)) {
-                if (eventDtoUserUpdate.getStateAction().equals(StateActionForUser.SEND_TO_REVIEW)) {
-                    eventForUpdate.setState(EventStatus.PENDING);
-                } else {
-                    eventForUpdate.setState(EventStatus.CANCELED);
-                }
+            if (eventDtoUserUpdate.getStateAction().equals(StateActionForUser.SEND_TO_REVIEW)) {
+                eventForUpdate.setState(EventStatus.PENDING);
+            } else {
+                eventForUpdate.setState(EventStatus.CANCELED);
             }
         }
-        System.out.println(eventForUpdate.getState());
         if (eventDtoUserUpdate.getTitle() != null)eventForUpdate.setTitle(eventDtoUserUpdate.getTitle());
         return EventMapper.toEventDtoAfterCreate(eventRepository.save(eventForUpdate));
     }

@@ -32,6 +32,7 @@ public class EventDtoCreate {
     private User initiator;
     @NotBlank
     private String description;
+    @Positive
     private int participantLimit;
     @NotNull
     private Location location;
