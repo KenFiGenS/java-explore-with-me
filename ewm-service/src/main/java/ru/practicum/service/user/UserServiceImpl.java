@@ -1,6 +1,9 @@
 package ru.practicum.service.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ru.practicum.dto.event.*;
@@ -44,7 +47,7 @@ public class UserServiceImpl implements UserService {
         User initiator = userRepository.getReferenceById(userId);
         Event currentEvent = EventMapper.toEvent(eventDtoCreate, currentCategory, initiator);
         Event currentEventAfterSave = eventRepository.save(currentEvent);
-        return EventMapper.toEventDtoAfterCreate(currentEventAfterSave);
+        return EventMapper.toEventDtoForResponse(currentEventAfterSave);
     }
 
     @Override
@@ -102,13 +105,12 @@ public class UserServiceImpl implements UserService {
             }
         }
         if (eventDtoUserUpdate.getTitle() != null) eventForUpdate.setTitle(eventDtoUserUpdate.getTitle());
-        return EventMapper.toEventDtoAfterCreate(eventRepository.save(eventForUpdate));
+        return EventMapper.toEventDtoForResponse(eventRepository.save(eventForUpdate));
     }
 
     @Override
     public RequestDto canceledRequestByOwner(int userId, int requestId) {
         Request currentRequest = requestRepository.findByIdAndRegister(requestId, userId);
-        System.out.println(currentRequest);
         currentRequest.setStatus(RequestStatus.CANCELED);
         return RequestMapper.toRequestDto(requestRepository.save(currentRequest));
     }
@@ -160,6 +162,50 @@ public class UserServiceImpl implements UserService {
             }
         });
         return requestDtoAfterChangeStatus;
+    }
+
+    @Override
+    public List<EventDtoForShortResponse> getEventsByInitiatorId(int userId, int from, int size) {
+        int currentPage = from / size;
+        Pageable pageable = PageRequest.of(currentPage, size);
+        Page<Event> events = eventRepository.findByInitiatorId(userId, pageable);
+        List<Integer> allEventsId = events.stream().map(Event::getId).collect(Collectors.toList());
+        List<Specification<Request>> specifications = requestFilterToSpecification(allEventsId);
+        List<Request> requestsByEventsId = requestRepository.findAll(specifications.stream().reduce(Specification::or).orElse(null));
+        List<EventDtoForShortResponse> responses = new ArrayList<>();
+
+        for (Event event : events) {
+            int confirmedRequests = (int) requestsByEventsId.stream().filter(r -> event.getId() == r.getEvent())
+                    .filter(request -> request.getStatus().equals(RequestStatus.CONFIRMED))
+                    .count();
+
+            responses.add(EventMapper.toEventDtoForShortResponse(event, confirmedRequests, 0));
+        }
+        return responses;
+    }
+
+    @Override
+    public EventDtoForResponse getEventsById(int userId, int eventId) {
+        Event currentEvent = eventRepository.findByIdAndInitiatorId(eventId, userId);
+        int numberOfConfirmedRequest = requestRepository.findByEventAndStatus(eventId, RequestStatus.CONFIRMED).size();
+        EventDtoForResponse response = EventMapper.toEventDtoForResponse(currentEvent);
+        response.setConfirmedRequests(numberOfConfirmedRequest);
+        return response;
+    }
+
+    @Override
+    public List<RequestDto> getRequestsByEventId(int userId, int eventId) {
+        Event currentEvent = eventRepository.findByIdAndInitiatorId(eventId, userId);
+        return requestRepository.findByEvent(eventId).stream()
+                .map(RequestMapper::toRequestDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RequestDto> getRequestsByRegisterId(int userId) {
+        return requestRepository.findByRegister(userId).stream()
+                .map(RequestMapper::toRequestDto)
+                .collect(Collectors.toList());
     }
 
     private List<Specification<Request>> requestFilterToSpecification(List<Integer> ids) {

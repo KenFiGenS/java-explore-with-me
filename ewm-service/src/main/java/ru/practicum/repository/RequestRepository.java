@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import ru.practicum.model.request.Request;
 import ru.practicum.model.request.RequestStatus;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface RequestRepository extends JpaRepository<Request, Integer>, JpaSpecificationExecutor<Request> {
@@ -13,4 +14,8 @@ public interface RequestRepository extends JpaRepository<Request, Integer>, JpaS
     Request findByIdAndRegister(int userId, int requestId);
 
     List<Request> findByEventAndStatus(int eventId, RequestStatus confirmed);
+
+    List<Request> findByEventAndRegister(int eventId, int userId);
+
+    List<Request> findByRegister(int userId);
 }

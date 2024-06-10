@@ -133,7 +133,7 @@ public class AdministratorServiceImpl implements AdministratorService {
             }
         }
         if (eventDtoAdminUpdate.getTitle() != null)eventForUpdate.setTitle(eventDtoAdminUpdate.getTitle());
-        return EventMapper.toEventDtoAfterCreate(eventRepository.save(eventForUpdate));
+        return EventMapper.toEventDtoForResponse(eventRepository.save(eventForUpdate));
     }
 
     private List<Specification<User>> userFilterToSpecification(List<Integer> ids) {

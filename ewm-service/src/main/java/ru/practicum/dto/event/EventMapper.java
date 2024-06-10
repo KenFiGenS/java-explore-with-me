@@ -34,7 +34,7 @@ public class EventMapper {
         );
     }
 
-    public static EventDtoForResponse toEventDtoAfterCreate(Event event) {
+    public static EventDtoForResponse toEventDtoForResponse(Event event) {
         return new EventDtoForResponse(
                 event.getId(),
                 event.getTitle(),
@@ -52,6 +52,20 @@ public class EventMapper {
                 event.isRequestModeration(),
                 0,
                 0
+        );
+    }
+
+    public static EventDtoForShortResponse toEventDtoForShortResponse(Event event, int confirmedRequests, int views) {
+        return new EventDtoForShortResponse(
+                event.getId(),
+                event.getTitle(),
+                event.getAnnotation(),
+                event.getCategory(),
+                event.isPaid(),
+                event.getEventDate(),
+                event.getInitiator(),
+                confirmedRequests,
+                views
         );
     }
 }
