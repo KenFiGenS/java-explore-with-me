@@ -124,7 +124,7 @@ public class UserServiceImpl implements UserService {
         List<Request> requestsForChangeStatus = requestRepository.findAll(specifications.stream().reduce(Specification::or).orElse(null));
         if (requestDtoChangeStatus.getStatus().equals(RequestStatus.CONFIRMED)) {
             for (Request currentRequest : requestsForChangeStatus) {
-                if (currentEvent.getParticipantLimit() < currentNumberOfConfirmedRequest) {
+                if (currentEvent.getParticipantLimit() > currentNumberOfConfirmedRequest) {
                     if (currentRequest.getStatus().equals(RequestStatus.PENDING)) {
                         currentRequest.setStatus(RequestStatus.CONFIRMED);
                         currentNumberOfConfirmedRequest++;
