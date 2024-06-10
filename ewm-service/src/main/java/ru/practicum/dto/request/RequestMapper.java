@@ -25,7 +25,7 @@ public class RequestMapper {
                 request.getCreated(),
                 request.getEvent(),
                 request.getRegister(),
-                RequestStatus.PENDING
+                request.getStatus()
         );
     }
 }

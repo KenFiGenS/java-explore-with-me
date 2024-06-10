@@ -11,7 +11,11 @@ import ru.practicum.dto.event.EventDtoForResponse;
 import ru.practicum.dto.event.EventDtoCreate;
 import ru.practicum.dto.event.EventDtoUserUpdate;
 import ru.practicum.dto.request.RequestDto;
+import ru.practicum.dto.request.RequestDtoAfterChangeStatus;
+import ru.practicum.dto.request.RequestDtoChangeStatus;
 import ru.practicum.service.user.UserService;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -40,5 +44,20 @@ public class UserController {
                                              @Validated @RequestBody EventDtoUserUpdate eventDtoUserUpdate) {
         log.info("Запрос на обновление события под id: {}, от пользователя под id {}", eventId, userId);
         return userService.updateRequest(userId, eventId, eventDtoUserUpdate);
+    }
+
+    @PatchMapping("/{userId}/requests/{requestId}/cancel")
+    public RequestDto canceledRequestByOwner(@PathVariable int userId,
+                                             @PathVariable int requestId) {
+        log.info("Запрос на отмену своего запроса id: {} на участие в событии от пользователя под id {}", requestId, userId);
+        return userService.canceledRequestByOwner(userId, requestId);
+    }
+
+    @PatchMapping("/{userId}/events/{eventId}/requests")
+    public RequestDtoAfterChangeStatus requestChangeStatusByEventOwner(@PathVariable int userId,
+                                                                       @PathVariable int eventId,
+                                                                       @RequestBody RequestDtoChangeStatus requestDtoChangeStatus) {
+        log.info("Запрос на изменение статуса заявок на участие в событии под id: {}, от организатора под id {}", eventId, userId);
+        return userService.requestDtoChangeStatus(userId, eventId, requestDtoChangeStatus);
     }
 }

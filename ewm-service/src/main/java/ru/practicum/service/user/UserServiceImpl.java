@@ -1,22 +1,28 @@
 package ru.practicum.service.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ru.practicum.dto.event.*;
 import ru.practicum.dto.request.RequestDto;
+import ru.practicum.dto.request.RequestDtoAfterChangeStatus;
+import ru.practicum.dto.request.RequestDtoChangeStatus;
 import ru.practicum.dto.request.RequestMapper;
 import ru.practicum.model.category.Category;
+import ru.practicum.model.event.Event;
 import ru.practicum.model.event.EventStatus;
 import ru.practicum.model.request.Request;
+import ru.practicum.model.request.RequestStatus;
 import ru.practicum.model.user.User;
-import ru.practicum.model.event.Event;
 import ru.practicum.repository.CategoryRepository;
 import ru.practicum.repository.EventRepository;
 import ru.practicum.repository.RequestRepository;
 import ru.practicum.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -63,12 +69,14 @@ public class UserServiceImpl implements UserService {
         if (eventForUpdate.getState().equals(EventStatus.PUBLISHED)) {
             throw new IllegalArgumentException("Cannot update the event because it's not in the right state: PUBLISHED");
         }
-        if (eventDtoUserUpdate.getAnnotation() != null) eventForUpdate.setAnnotation(eventDtoUserUpdate.getAnnotation());
+        if (eventDtoUserUpdate.getAnnotation() != null)
+            eventForUpdate.setAnnotation(eventDtoUserUpdate.getAnnotation());
         if (eventDtoUserUpdate.getCategory() != 0) {
             Category categoryForUpdate = categoryRepository.getReferenceById(eventDtoUserUpdate.getCategory());
             eventForUpdate.setCategory(categoryForUpdate);
         }
-        if (eventDtoUserUpdate.getDescription() != null)eventForUpdate.setDescription(eventDtoUserUpdate.getDescription());
+        if (eventDtoUserUpdate.getDescription() != null)
+            eventForUpdate.setDescription(eventDtoUserUpdate.getDescription());
         if (eventDtoUserUpdate.getEventDate() != null) {
             if (eventDtoUserUpdate.getEventDate().isAfter(LocalDateTime.now().plusHours(2))) {
                 eventForUpdate.setEventDate(eventDtoUserUpdate.getEventDate());
@@ -81,9 +89,11 @@ public class UserServiceImpl implements UserService {
             eventForUpdate.setLat(eventDtoUserUpdate.getLocation().getLat());
             eventForUpdate.setLon(eventDtoUserUpdate.getLocation().getLon());
         }
-        if (eventDtoUserUpdate.getPaid() != null)eventForUpdate.setPaid(eventDtoUserUpdate.getPaid());
-        if (eventDtoUserUpdate.getParticipantLimit() > 0)eventForUpdate.setParticipantLimit(eventDtoUserUpdate.getParticipantLimit());
-        if (eventDtoUserUpdate.getRequestModeration() != null)eventForUpdate.setRequestModeration(eventDtoUserUpdate.getRequestModeration());
+        if (eventDtoUserUpdate.getPaid() != null) eventForUpdate.setPaid(eventDtoUserUpdate.getPaid());
+        if (eventDtoUserUpdate.getParticipantLimit() > 0)
+            eventForUpdate.setParticipantLimit(eventDtoUserUpdate.getParticipantLimit());
+        if (eventDtoUserUpdate.getRequestModeration() != null)
+            eventForUpdate.setRequestModeration(eventDtoUserUpdate.getRequestModeration());
         if (eventDtoUserUpdate.getStateAction() != null) {
             if (eventDtoUserUpdate.getStateAction().equals(StateActionForUser.SEND_TO_REVIEW)) {
                 eventForUpdate.setState(EventStatus.PENDING);
@@ -91,7 +101,74 @@ public class UserServiceImpl implements UserService {
                 eventForUpdate.setState(EventStatus.CANCELED);
             }
         }
-        if (eventDtoUserUpdate.getTitle() != null)eventForUpdate.setTitle(eventDtoUserUpdate.getTitle());
+        if (eventDtoUserUpdate.getTitle() != null) eventForUpdate.setTitle(eventDtoUserUpdate.getTitle());
         return EventMapper.toEventDtoAfterCreate(eventRepository.save(eventForUpdate));
+    }
+
+    @Override
+    public RequestDto canceledRequestByOwner(int userId, int requestId) {
+        Request currentRequest = requestRepository.findByIdAndRegister(requestId, userId);
+        System.out.println(currentRequest);
+        currentRequest.setStatus(RequestStatus.CANCELED);
+        return RequestMapper.toRequestDto(requestRepository.save(currentRequest));
+    }
+
+    @Override
+    public RequestDtoAfterChangeStatus requestDtoChangeStatus(int userId, int eventId, RequestDtoChangeStatus requestDtoChangeStatus) {
+        Event currentEvent = eventRepository.findByIdAndInitiatorId(eventId, userId);
+        int currentNumberOfConfirmedRequest = requestRepository.findByEventAndStatus(eventId, RequestStatus.CONFIRMED).size();
+        if (currentEvent.getParticipantLimit() == currentNumberOfConfirmedRequest) {
+            throw new IllegalArgumentException("The participant limit has been reached");
+        }
+        List<Specification<Request>> specifications = requestFilterToSpecification(requestDtoChangeStatus.getRequestIds());
+        List<Request> requestsForChangeStatus = requestRepository.findAll(specifications.stream().reduce(Specification::or).orElse(null));
+        if (requestDtoChangeStatus.getStatus().equals(RequestStatus.CONFIRMED)) {
+            for (Request currentRequest : requestsForChangeStatus) {
+                if (currentEvent.getParticipantLimit() < currentNumberOfConfirmedRequest) {
+                    if (currentRequest.getStatus().equals(RequestStatus.PENDING)) {
+                        currentRequest.setStatus(RequestStatus.CONFIRMED);
+                        currentNumberOfConfirmedRequest++;
+                    } else {
+                        throw new IllegalArgumentException("Request must have status PENDING");
+                    }
+                } else {
+                    if (currentRequest.getStatus().equals(RequestStatus.PENDING)) {
+                        currentRequest.setStatus(RequestStatus.REJECTED);
+                    } else {
+                        throw new IllegalArgumentException("Request must have status PENDING");
+                    }
+                }
+            }
+        }
+        if (requestDtoChangeStatus.getStatus().equals(RequestStatus.REJECTED)) {
+            for (Request currentRequest : requestsForChangeStatus) {
+                if (currentRequest.getStatus().equals(RequestStatus.PENDING)) {
+                    currentRequest.setStatus(RequestStatus.REJECTED);
+                } else {
+                    throw new IllegalArgumentException("Request must have status PENDING");
+                }
+            }
+        }
+        List<RequestDto> requestDtoAfterSave = requestRepository.saveAll(requestsForChangeStatus).stream()
+                .map(RequestMapper::toRequestDto).collect(Collectors.toList());
+        RequestDtoAfterChangeStatus requestDtoAfterChangeStatus = new RequestDtoAfterChangeStatus();
+        requestDtoAfterSave.forEach(requestDto -> {
+            if (requestDto.getStatus().equals(RequestStatus.CONFIRMED)) {
+                requestDtoAfterChangeStatus.getConfirmedRequests().add(requestDto);
+            } else {
+                requestDtoAfterChangeStatus.getRejectedRequests().add(requestDto);
+            }
+        });
+        return requestDtoAfterChangeStatus;
+    }
+
+    private List<Specification<Request>> requestFilterToSpecification(List<Integer> ids) {
+        List<Specification<Request>> specifications = new ArrayList<>();
+        specifications.add(idIn(ids));
+        return specifications;
+    }
+
+    private Specification<Request> idIn(List<Integer> values) {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.in(root.get("id")).value(values));
     }
 }
