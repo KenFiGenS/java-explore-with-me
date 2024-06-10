@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
         if (!currentEvent.getState().equals(EventStatus.PUBLISHED)) {
             throw new IllegalArgumentException("The event has not been published yet");
         }
-        if (currentEvent.getParticipantLimit() < requestsByEventId.size() + 1) {
+        if (!currentEvent.isRequestModeration() && currentEvent.getParticipantLimit() <= requestsByEventId.size()) {
             throw new IllegalArgumentException("The event gathered the maximum number of participants");
         }
         return RequestMapper.toRequestDto(requestRepository.save(RequestMapper.toRequest(userId, eventId)));
