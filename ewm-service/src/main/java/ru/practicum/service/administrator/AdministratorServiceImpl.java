@@ -145,8 +145,8 @@ public class AdministratorServiceImpl implements AdministratorService {
         int currentPage = from/size;
         Pageable page = PageRequest.of(currentPage, size);
         List<Specification<Event>> specifications = eventFilterToSpecification(searchFilterForAdmin);
-        return eventRepository.findAll(specifications.stream().reduce(Specification::or).orElse(null), page).stream()
-                .sorted(Comparator.comparing(Event::getEventDate).reversed())
+        return eventRepository.findAll(specifications.stream().reduce(Specification::and).orElse(null), page).stream()
+                .sorted(Comparator.comparing(Event::getEventDate))
                 .map(EventMapper::toEventDtoForResponse)
                 .collect(Collectors.toList());
     }
@@ -178,6 +178,6 @@ public class AdministratorServiceImpl implements AdministratorService {
     }
 
     private Specification<Event> idIn(List<Integer> values) {
-        return ((root, query, criteriaBuilder) -> criteriaBuilder.in(root.get("id")).value(values));
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.in(root.get("initiator").get("id")).value(values));
     }
 }

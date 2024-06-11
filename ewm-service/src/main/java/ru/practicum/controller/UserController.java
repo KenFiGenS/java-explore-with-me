@@ -29,7 +29,7 @@ public class UserController {
 
     @PostMapping("/{userId}/events")
     public ResponseEntity<EventDtoForResponse> createEvent(@PathVariable int userId, @Validated @RequestBody EventDtoCreate eventDtoCreate) {
-        log.info("Запрос на создание события: {}", eventDtoCreate.getTitle());
+        log.info("USER: Запрос на создание события: {}", eventDtoCreate.getTitle());
         return new ResponseEntity<>(userService.createEvent(userId, eventDtoCreate), null, HttpStatus.CREATED);
     }
 
@@ -37,7 +37,7 @@ public class UserController {
     public EventDtoForResponse updateRequest(@PathVariable int userId,
                                              @PathVariable int eventId,
                                              @Validated @RequestBody EventDtoUserUpdate eventDtoUserUpdate) {
-        log.info("Запрос на обновление события под id: {}, от пользователя под id {}", eventId, userId);
+        log.info("USER: Запрос на обновление события под id: {}, от пользователя под id {}", eventId, userId);
         return userService.updateEvent(userId, eventId, eventDtoUserUpdate);
     }
 
@@ -45,40 +45,40 @@ public class UserController {
     public List<EventDtoForShortResponse> getEventsByInitiatorId(@PathVariable int userId,
                                                                  @RequestParam(defaultValue = "0") int from,
                                                                  @RequestParam(defaultValue = "10") int size) {
-        log.info("Запрос на получение списка событий созданных пользователем под id: {}", userId);
+        log.info("USER: Запрос на получение списка событий созданных пользователем под id: {}", userId);
         return userService.getEventsByInitiatorId(userId, from, size);
     }
 
     @GetMapping("/{userId}/events/{eventId}")
     public EventDtoForResponse getEventsById(@PathVariable int userId,
                                              @PathVariable int eventId) {
-        log.info("Запрос на получение события под id:{}, созданного пользователем под id: {}", eventId, userId);
+        log.info("USER: Запрос на получение события под id:{}, созданного пользователем под id: {}", eventId, userId);
         return userService.getEventsById(userId, eventId);
     }
 
     @GetMapping("/{userId}/events/{eventId}/requests")
     public List<RequestDto> getRequestsByEventId(@PathVariable int userId,
                                                  @PathVariable int eventId) {
-        log.info("Запрос на получение списка запросов на участие в событии под id: {} созданном пользователем под id: {}", eventId, userId);
+        log.info("USER: Запрос на получение списка запросов на участие в событии под id: {} созданном пользователем под id: {}", eventId, userId);
         return userService.getRequestsByEventId(userId, eventId);
     }
 
     @GetMapping("/{userId}/requests")
     public List<RequestDto> getRequestsByRegisterId(@PathVariable int userId) {
-        log.info("Запрос на получение списка запросов на участие в событиях пользователя под id: {}", userId);
+        log.info("USER: Запрос на получение списка запросов на участие в событиях пользователя под id: {}", userId);
         return userService.getRequestsByRegisterId(userId);
     }
 
     @PatchMapping("/{userId}/requests/{requestId}/cancel")
     public RequestDto canceledRequestByOwner(@PathVariable int userId,
                                              @PathVariable int requestId) {
-        log.info("Запрос на отмену своего запроса id: {} на участие в событии от пользователя под id {}", requestId, userId);
+        log.info("USER: Запрос на отмену своего запроса id: {} на участие в событии от пользователя под id {}", requestId, userId);
         return userService.canceledRequestByOwner(userId, requestId);
     }
 
     @PostMapping("/{userId}/requests")
     public ResponseEntity<RequestDto> createRequest(@PathVariable int userId, @RequestParam int eventId) {
-        log.info("Запрос на участие пользователя под id {} в событии под id: {}", userId, eventId);
+        log.info("USER: Запрос на участие пользователя под id {} в событии под id: {}", userId, eventId);
         return new ResponseEntity<>(userService.createRequest(userId, eventId), null, HttpStatus.CREATED);
     }
 
@@ -86,7 +86,7 @@ public class UserController {
     public RequestDtoAfterChangeStatus requestChangeStatusByEventOwner(@PathVariable int userId,
                                                                        @PathVariable int eventId,
                                                                        @RequestBody RequestDtoChangeStatus requestDtoChangeStatus) {
-        log.info("Запрос на изменение статуса заявок на участие в событии под id: {}, от организатора под id {}", eventId, userId);
+        log.info("USER: Запрос на изменение статуса заявок на участие в событии под id: {}, от организатора под id {}", eventId, userId);
         return userService.requestDtoChangeStatus(userId, eventId, requestDtoChangeStatus);
     }
 }

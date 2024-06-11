@@ -42,4 +42,5 @@ public class Event {
     private float lat;
     private float lon;
     private boolean requestModeration;
+    private int confirmedRequests;
 }

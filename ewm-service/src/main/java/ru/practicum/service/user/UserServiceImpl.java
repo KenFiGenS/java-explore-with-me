@@ -64,7 +64,10 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("The event gathered the maximum number of participants");
         }
         Request newRequest = RequestMapper.toRequest(userId, eventId);
-        if (currentEvent.isRequestModeration() && currentEvent.getParticipantLimit() == 0) newRequest.setStatus(RequestStatus.CONFIRMED);
+        if (currentEvent.isRequestModeration() && currentEvent.getParticipantLimit() == 0) {
+            newRequest.setStatus(RequestStatus.CONFIRMED);
+            currentEvent.setConfirmedRequests(currentEvent.getConfirmedRequests() + 1);
+        }
         return RequestMapper.toRequestDto(requestRepository.save(newRequest));
     }
 
@@ -120,7 +123,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public RequestDtoAfterChangeStatus requestDtoChangeStatus(int userId, int eventId, RequestDtoChangeStatus requestDtoChangeStatus) {
         Event currentEvent = eventRepository.findByIdAndInitiatorId(eventId, userId);
-        int currentNumberOfConfirmedRequest = requestRepository.findByEventAndStatus(eventId, RequestStatus.CONFIRMED).size();
+        int currentNumberOfConfirmedRequest = currentEvent.getConfirmedRequests();
         if (currentEvent.getParticipantLimit() == currentNumberOfConfirmedRequest) {
             throw new IllegalArgumentException("The participant limit has been reached");
         }
@@ -153,6 +156,8 @@ public class UserServiceImpl implements UserService {
                 }
             }
         }
+        currentEvent.setConfirmedRequests(currentNumberOfConfirmedRequest);
+        eventRepository.save(currentEvent);
         List<RequestDto> requestDtoAfterSave = requestRepository.saveAll(requestsForChangeStatus).stream()
                 .map(RequestMapper::toRequestDto).collect(Collectors.toList());
         RequestDtoAfterChangeStatus requestDtoAfterChangeStatus = new RequestDtoAfterChangeStatus();

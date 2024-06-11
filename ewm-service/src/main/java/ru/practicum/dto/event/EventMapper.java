@@ -30,7 +30,8 @@ public class EventMapper {
                 null,
                 eventDtoCreate.getLocation().getLat(),
                 eventDtoCreate.getLocation().getLon(),
-                eventDtoCreate.getRequestModeration() == null ? true : eventDtoCreate.getRequestModeration()
+                eventDtoCreate.getRequestModeration() == null ? true : eventDtoCreate.getRequestModeration(),
+                0
         );
     }
 
@@ -50,7 +51,7 @@ public class EventMapper {
                 event.getPublishedOn() !=null ? event.getPublishedOn() : null,
                 new Location(event.getLat(), event.getLon()),
                 event.isRequestModeration(),
-                0,
+                event.getConfirmedRequests(),
                 0
         );
     }

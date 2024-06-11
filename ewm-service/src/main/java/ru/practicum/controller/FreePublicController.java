@@ -22,13 +22,13 @@ public class FreePublicController {
     @GetMapping("/categories")
     public List<CategoryDto> getCategories(@RequestParam(defaultValue = "0") int from,
                                            @RequestParam(defaultValue = "10") int size) {
-        log.info("Выполняется запрос на получение страницы категорий, начиная с {} элемента, размером станицы в {} элементов", from, size);
+        log.info("PUBLIC: Выполняется запрос на получение страницы категорий, начиная с {} элемента, размером станицы в {} элементов", from, size);
         return publicService.getCategories(from, size);
     }
 
     @GetMapping("/categories/{catId}")
     public CategoryDto getCategoriesById(@PathVariable int catId) {
-        log.info("Выполняется запрос на получение категории под id: {}", catId);
+        log.info("PUBLIC: Выполняется запрос на получение категории под id: {}", catId);
         return publicService.getCategoriesById(catId);
     }
 
