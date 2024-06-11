@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.category.CategoryMapper;
-import ru.practicum.dto.event.EventDtoAdminUpdate;
-import ru.practicum.dto.event.EventDtoForResponse;
-import ru.practicum.dto.event.EventMapper;
-import ru.practicum.dto.event.StateActionForAdmin;
+import ru.practicum.dto.event.*;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.dto.user.UserMapper;
 import ru.practicum.model.category.Category;
@@ -23,10 +20,16 @@ import ru.practicum.repository.CategoryRepository;
 import ru.practicum.repository.EventRepository;
 import ru.practicum.repository.UserRepository;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.sql.SQLDataException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,7 +49,8 @@ public class AdministratorServiceImpl implements AdministratorService {
     @Override
     public List<UserDto> getUsers(List<Integer> ids, int from, int size) {
         if (!ids.isEmpty()) {
-            List<Specification<User>> specifications = userFilterToSpecification(ids);
+            List<Specification<User>> specifications = new ArrayList<>();
+            specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.in(root.get("id")).value(ids));
             return userRepository.findAll(specifications.stream().reduce(Specification::or).orElse(null)).stream()
                     .map(UserMapper::toUserDto)
                     .collect(Collectors.toList());
@@ -136,13 +140,44 @@ public class AdministratorServiceImpl implements AdministratorService {
         return EventMapper.toEventDtoForResponse(eventRepository.save(eventForUpdate));
     }
 
-    private List<Specification<User>> userFilterToSpecification(List<Integer> ids) {
-        List<Specification<User>> specifications = new ArrayList<>();
-        specifications.add(idIn(ids));
-        return specifications;
+    @Override
+    public List<EventDtoForResponse> getAllEventBySpecification(SearchFilterForAdmin searchFilterForAdmin, int from, int size) {
+        int currentPage = from/size;
+        Pageable page = PageRequest.of(currentPage, size);
+        List<Specification<Event>> specifications = eventFilterToSpecification(searchFilterForAdmin);
+        return eventRepository.findAll(specifications.stream().reduce(Specification::or).orElse(null), page).stream()
+                .sorted(Comparator.comparing(Event::getEventDate).reversed())
+                .map(EventMapper::toEventDtoForResponse)
+                .collect(Collectors.toList());
     }
 
-    private Specification<User> idIn(List<Integer> values) {
+    private List<Specification<Event>> eventFilterToSpecification(SearchFilterForAdmin filter) {
+        List<Specification<Event>> specifications = new ArrayList<>();
+        specifications.add(filter.getUsers() == null ? null : idIn(filter.getUsers()));
+        specifications.add(filter.getStates() == null ? null : stateIn(filter.getStates()));
+        specifications.add(filter.getCategories() == null ? null : categoriesIn(filter.getCategories()));
+        specifications.add(filter.getRangeStart() == null ? null : rangeGrater(filter.getRangeStart()));
+        specifications.add(filter.getRangeEnd() == null ? null : rangeLess(filter.getRangeEnd()));
+        return specifications.stream().filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    private Specification<Event> rangeLess(LocalDateTime rangeEnd) {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.lessThan(root.get("eventDate"), rangeEnd));
+    }
+
+    private Specification<Event> rangeGrater(LocalDateTime rangeStart) {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get("eventDate"), rangeStart));
+    }
+
+    private Specification<Event> categoriesIn(List<Integer> categories) {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.in(root.get("category").get("id")).value(categories));
+    }
+
+    private Specification<Event> stateIn(List<EventStatus> states) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.in(root.get("state")).value(states);
+    }
+
+    private Specification<Event> idIn(List<Integer> values) {
         return ((root, query, criteriaBuilder) -> criteriaBuilder.in(root.get("id")).value(values));
     }
 }

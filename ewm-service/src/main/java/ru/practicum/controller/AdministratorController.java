@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.event.EventDtoAdminUpdate;
 import ru.practicum.dto.event.EventDtoForResponse;
+import ru.practicum.dto.event.SearchFilterForAdmin;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.service.administrator.AdministratorService;
 
@@ -71,5 +72,13 @@ public class AdministratorController {
         log.info("Выполняется запрос на обновление события под id: {}", eventId);
         EventDtoForResponse eventDtoAfterUpdate = administratorService.updateEvent(eventId, eventDtoAdminUpdate);
         return eventDtoAfterUpdate;
+    }
+
+    @GetMapping("/events")
+    public List<EventDtoForResponse> getAllEventBySpecification(SearchFilterForAdmin searchFilterForAdmin,
+                                                                @RequestParam(defaultValue = "0") int from,
+                                                                @RequestParam(defaultValue = "10") int size) {
+        log.info("Запрос на получение списка событий по спецификации: {}", searchFilterForAdmin);
+        return administratorService.getAllEventBySpecification(searchFilterForAdmin, from, size);
     }
 }
