@@ -63,11 +63,13 @@ public class UserServiceImpl implements UserService {
         if (!currentEvent.isRequestModeration() && currentEvent.getParticipantLimit() <= requestsByEventId.size()) {
             throw new IllegalArgumentException("The event gathered the maximum number of participants");
         }
-        return RequestMapper.toRequestDto(requestRepository.save(RequestMapper.toRequest(userId, eventId)));
+        Request newRequest = RequestMapper.toRequest(userId, eventId);
+        if (currentEvent.isRequestModeration() && currentEvent.getParticipantLimit() == 0) newRequest.setStatus(RequestStatus.CONFIRMED);
+        return RequestMapper.toRequestDto(requestRepository.save(newRequest));
     }
 
     @Override
-    public EventDtoForResponse updateRequest(int userId, int eventId, EventDtoUserUpdate eventDtoUserUpdate) {
+    public EventDtoForResponse updateEvent(int userId, int eventId, EventDtoUserUpdate eventDtoUserUpdate) {
         Event eventForUpdate = eventRepository.getReferenceById(eventId);
         if (eventForUpdate.getState().equals(EventStatus.PUBLISHED)) {
             throw new IllegalArgumentException("Cannot update the event because it's not in the right state: PUBLISHED");

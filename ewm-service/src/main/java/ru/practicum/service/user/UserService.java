@@ -15,7 +15,7 @@ public interface UserService {
 
     RequestDto createRequest(int userId, int eventId);
 
-    EventDtoForResponse updateRequest(int userId, int eventId, EventDtoUserUpdate eventDtoUserUpdate);
+    EventDtoForResponse updateEvent(int userId, int eventId, EventDtoUserUpdate eventDtoUserUpdate);
 
     RequestDto canceledRequestByOwner(int userId, int requestId);
 

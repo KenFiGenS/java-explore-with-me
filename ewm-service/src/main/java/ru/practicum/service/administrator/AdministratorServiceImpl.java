@@ -120,7 +120,7 @@ public class AdministratorServiceImpl implements AdministratorService {
         if (eventDtoAdminUpdate.getPaid() != null)eventForUpdate.setPaid(eventDtoAdminUpdate.getPaid());
         if (eventDtoAdminUpdate.getParticipantLimit() != 0)eventForUpdate.setParticipantLimit(eventDtoAdminUpdate.getParticipantLimit());
         if (eventDtoAdminUpdate.getRequestModeration() != null)eventForUpdate.setRequestModeration(eventDtoAdminUpdate.getRequestModeration());
-        if (eventDtoAdminUpdate.getStateAction().equals(StateActionForAdmin.PUBLISH_EVENT)) {
+        if (eventDtoAdminUpdate.getStateAction() != null && eventDtoAdminUpdate.getStateAction().equals(StateActionForAdmin.PUBLISH_EVENT)) {
             if (eventForUpdate.getState().equals(EventStatus.PENDING)) {
                 eventForUpdate.setState(EventStatus.PUBLISHED);
                 eventForUpdate.setPublishedOn(LocalDateTime.now());

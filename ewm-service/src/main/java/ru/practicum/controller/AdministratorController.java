@@ -67,7 +67,7 @@ public class AdministratorController {
     }
 
     @PatchMapping("/events/{eventId}")
-    public EventDtoForResponse updateEvent(@RequestBody EventDtoAdminUpdate eventDtoAdminUpdate,
+    public EventDtoForResponse updateEvent(@Validated @RequestBody EventDtoAdminUpdate eventDtoAdminUpdate,
                                            @PathVariable int eventId) {
         log.info("Выполняется запрос на обновление события под id: {}", eventId);
         EventDtoForResponse eventDtoAfterUpdate = administratorService.updateEvent(eventId, eventDtoAdminUpdate);

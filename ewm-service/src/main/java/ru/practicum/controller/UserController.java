@@ -38,7 +38,7 @@ public class UserController {
                                              @PathVariable int eventId,
                                              @Validated @RequestBody EventDtoUserUpdate eventDtoUserUpdate) {
         log.info("Запрос на обновление события под id: {}, от пользователя под id {}", eventId, userId);
-        return userService.updateRequest(userId, eventId, eventDtoUserUpdate);
+        return userService.updateEvent(userId, eventId, eventDtoUserUpdate);
     }
 
     @GetMapping("/{userId}/events")

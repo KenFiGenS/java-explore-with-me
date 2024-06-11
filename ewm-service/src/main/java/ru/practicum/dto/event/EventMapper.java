@@ -20,7 +20,7 @@ public class EventMapper {
                 eventDtoCreate.getTitle(),
                 eventDtoCreate.getAnnotation(),
                 category,
-                eventDtoCreate.isPaid(),
+                eventDtoCreate.getPaid() == null ? false : eventDtoCreate.getPaid(),
                 eventDtoCreate.getEventDate(),
                 user,
                 eventDtoCreate.getDescription(),
@@ -30,7 +30,7 @@ public class EventMapper {
                 null,
                 eventDtoCreate.getLocation().getLat(),
                 eventDtoCreate.getLocation().getLon(),
-                eventDtoCreate.isRequestModeration()
+                eventDtoCreate.getRequestModeration() == null ? true : eventDtoCreate.getRequestModeration()
         );
     }
 
