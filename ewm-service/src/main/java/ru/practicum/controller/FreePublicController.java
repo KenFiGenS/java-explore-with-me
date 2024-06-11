@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.category.CategoryDto;
+import ru.practicum.dto.event.EventDtoForResponse;
 import ru.practicum.service.free.PublicService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Slf4j
@@ -32,4 +34,13 @@ public class FreePublicController {
         return publicService.getCategoriesById(catId);
     }
 
+    @GetMapping("/events/{id}")
+    public EventDtoForResponse getEventById(@PathVariable int id,
+                                            HttpServletRequest request) {
+        String app = request.getRemoteAddr();
+        String uri = request.getRequestURI();
+        String ip = request.getRemoteAddr();
+        log.info("PUBLIC: Выполняется запрос на получение события под id: {}, app: {}, uri: {}, ip: {}", id, app, uri, ip);
+        return publicService.getEventById(id, request);
+    }
 }
