@@ -33,16 +33,7 @@ public class StatsClient {
 
     @SneakyThrows
     public List<StatsDtoWithHitsCount> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
-        String url;
-        if (uris.isEmpty() && unique == null) {
-            url = "?start=" + start + "&end=" + end;
-        } else if (!uris.isEmpty() && unique == null) {
-            url = "?start=" + start + "&end=" + end + "&uris=" + uris;
-        } else if (!uris.isEmpty()) {
-            url = "?start=" + start + "&end=" + end + "&unique=" + unique;
-        } else {
-            url = "?start=" + start + "&end=" + end + "&uris=" + uris + "&unique=" + unique;
-        }
+        String url = "?start=" + start + "&end=" + end + "&uris=" + uris + "&unique=" + unique;
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);

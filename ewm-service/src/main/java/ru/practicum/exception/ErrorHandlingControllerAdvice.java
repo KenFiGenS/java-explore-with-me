@@ -43,9 +43,14 @@ public class ErrorHandlingControllerAdvice {
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity onDataNotFoundException(EntityNotFoundException e) {
+    public ResponseEntity<Violation> onDataNotFoundException(EntityNotFoundException e) {
         log.info("Получен статус 404 NOT_FOUND {}", e.getMessage(), e);
-        return new ResponseEntity(null, null, HttpStatus.NOT_FOUND);
+        Violation violation = new Violation(e.getStackTrace().toString(),
+                "NOT_FOUND",
+                "The required object was not found.",
+                e.getMessage(),
+                LocalDateTime.now().format(DATE_TIME_FORMATTER));
+        return new ResponseEntity(violation, null, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
