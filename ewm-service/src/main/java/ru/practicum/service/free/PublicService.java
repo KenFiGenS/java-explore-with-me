@@ -2,6 +2,7 @@ package ru.practicum.service.free;
 
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.event.EventDtoForResponse;
+import ru.practicum.dto.event.SearchFilterForPublic;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -12,4 +13,6 @@ public interface PublicService {
     CategoryDto getCategoriesById(int catId);
 
     EventDtoForResponse getEventById(int id, HttpServletRequest request);
+
+    List<EventDtoForResponse> getEventsBySearchFilter(SearchFilterForPublic filter, String sort, int from, int size, HttpServletRequest request);
 }

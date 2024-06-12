@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.event.EventDtoForResponse;
+import ru.practicum.dto.event.SearchFilterForPublic;
 import ru.practicum.service.free.PublicService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,10 +38,23 @@ public class FreePublicController {
     @GetMapping("/events/{id}")
     public EventDtoForResponse getEventById(@PathVariable int id,
                                             HttpServletRequest request) {
-        String app = request.getRemoteAddr();
+        String app = "ewm-service";
         String uri = request.getRequestURI();
         String ip = request.getRemoteAddr();
         log.info("PUBLIC: Выполняется запрос на получение события под id: {}, app: {}, uri: {}, ip: {}", id, app, uri, ip);
         return publicService.getEventById(id, request);
+    }
+
+    @GetMapping("/events")
+    public List<EventDtoForResponse> getEventsBySearchFilter(@Validated SearchFilterForPublic filter,
+                                                             @RequestParam(defaultValue = "") String sort,
+                                                             @RequestParam(defaultValue = "0") int from,
+                                                             @RequestParam(defaultValue = "10") int size,
+                                                             HttpServletRequest request) {
+        String app = "ewm-service";
+        String uri = request.getRequestURI();
+        String ip = request.getRemoteAddr();
+        log.info("PUBLIC: Выполняется запрос на получение списка событий по полям: {}, от app: {}, uri: {}, ip: {}", filter, app, uri, ip);
+        return publicService.getEventsBySearchFilter(filter, sort, from, size, request);
     }
 }
