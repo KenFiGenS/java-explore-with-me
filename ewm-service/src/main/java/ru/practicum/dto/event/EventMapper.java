@@ -56,7 +56,7 @@ public class EventMapper {
         );
     }
 
-    public static EventDtoForShortResponse toEventDtoForShortResponse(Event event, int confirmedRequests, int views) {
+    public static EventDtoForShortResponse toEventDtoForShortResponse(Event event) {
         return new EventDtoForShortResponse(
                 event.getId(),
                 event.getTitle(),
@@ -65,8 +65,8 @@ public class EventMapper {
                 event.isPaid(),
                 event.getEventDate(),
                 event.getInitiator(),
-                confirmedRequests,
-                views
+                event.getConfirmedRequests(),
+                0
         );
     }
 }

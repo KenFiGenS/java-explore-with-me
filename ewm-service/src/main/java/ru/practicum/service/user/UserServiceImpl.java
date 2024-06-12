@@ -186,7 +186,7 @@ public class UserServiceImpl implements UserService {
                     .filter(request -> request.getStatus().equals(RequestStatus.CONFIRMED))
                     .count();
 
-            responses.add(EventMapper.toEventDtoForShortResponse(event, confirmedRequests, 0));
+            responses.add(EventMapper.toEventDtoForShortResponse(event));
         }
         return responses;
     }

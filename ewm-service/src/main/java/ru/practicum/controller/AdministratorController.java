@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.category.CategoryDto;
+import ru.practicum.dto.compilation.CompilationDtoForCreate;
+import ru.practicum.dto.compilation.ComplicationDtoForResponse;
 import ru.practicum.dto.event.EventDtoAdminUpdate;
 import ru.practicum.dto.event.EventDtoForResponse;
 import ru.practicum.dto.event.SearchFilterForAdmin;
@@ -80,5 +82,11 @@ public class AdministratorController {
                                                                 @RequestParam(defaultValue = "10") int size) {
         log.info("ADMIN: Запрос на получение списка событий по спецификации: {}", searchFilterForAdmin);
         return administratorService.getAllEventBySpecification(searchFilterForAdmin, from, size);
+    }
+
+    @PostMapping("/compilations")
+    public ComplicationDtoForResponse createCompilation(@Validated @RequestBody CompilationDtoForCreate dtoForCreate) {
+        log.info("ADMIN: Запрос на создание подборки из событий под id: {}", dtoForCreate.getEvents());
+        return administratorService.createCompilation(dtoForCreate);
     }
 }

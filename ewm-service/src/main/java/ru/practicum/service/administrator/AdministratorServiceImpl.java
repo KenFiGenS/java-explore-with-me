@@ -1,5 +1,7 @@
 package ru.practicum.service.administrator;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -7,8 +9,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.StatsClient;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.category.CategoryMapper;
+import ru.practicum.dto.compilation.CompilationDtoForCreate;
+import ru.practicum.dto.compilation.CompilationMapper;
+import ru.practicum.dto.compilation.ComplicationDtoForResponse;
 import ru.practicum.dto.event.*;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.dto.user.UserMapper;
@@ -17,8 +23,10 @@ import ru.practicum.model.event.Event;
 import ru.practicum.model.event.EventStatus;
 import ru.practicum.model.user.User;
 import ru.practicum.repository.CategoryRepository;
+import ru.practicum.repository.ComplicationRepository;
 import ru.practicum.repository.EventRepository;
 import ru.practicum.repository.UserRepository;
+import ru.practicum.statsDto.StatsDtoWithHitsCount;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -26,20 +34,21 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.sql.SQLDataException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class AdministratorServiceImpl implements AdministratorService {
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
     @Autowired
-    EventRepository eventRepository;
+    private EventRepository eventRepository;
+    @Autowired
+    private ComplicationRepository complicationRepository;
+    @Autowired
+    private StatsClient statsClient;
 
     @Override
     public UserDto createUser(UserDto userDtoCreate) {
@@ -149,6 +158,33 @@ public class AdministratorServiceImpl implements AdministratorService {
                 .sorted(Comparator.comparing(Event::getEventDate))
                 .map(EventMapper::toEventDtoForResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ComplicationDtoForResponse createCompilation(CompilationDtoForCreate dtoForCreate) {
+        List<Event> eventsForCompilation = eventRepository.findAllById(dtoForCreate.getEvents());
+        List<EventDtoForShortResponse> eventsDtoForCompilation = eventsForCompilation.stream()
+                .map(EventMapper::toEventDtoForShortResponse)
+                .collect(Collectors.toList());
+        List<String> uris = eventsForCompilation.stream().map(e -> ("/event/" + e.getId())).collect(Collectors.toList());
+
+        List<StatsDtoWithHitsCount> stats = statsClient.getStats(
+                LocalDateTime.of(2024, 06, 12, 12, 25 , 35),
+                LocalDateTime.of(2025, 06, 12, 15, 25 , 35),
+                uris,
+                true
+        );
+        ObjectMapper mapper = new ObjectMapper();
+        List<StatsDtoWithHitsCount> statsAfterConvert = mapper.convertValue(stats, new TypeReference<>() {});
+        for (EventDtoForShortResponse eventDto : eventsDtoForCompilation) {
+            for (StatsDtoWithHitsCount statsDto : statsAfterConvert) {
+                if (statsDto.getUri().equals("/event/" + eventDto.getId())) {
+                    eventDto.setViews(statsDto.getHits());
+                }
+            }
+        }
+        return CompilationMapper.toComplicationDtoForResponse(eventsDtoForCompilation,
+                complicationRepository.save(CompilationMapper.toCompilation(eventsForCompilation, dtoForCreate)));
     }
 
     private List<Specification<Event>> eventFilterToSpecification(SearchFilterForAdmin filter) {

@@ -1,6 +1,8 @@
 package ru.practicum.service.administrator;
 
 import ru.practicum.dto.category.CategoryDto;
+import ru.practicum.dto.compilation.CompilationDtoForCreate;
+import ru.practicum.dto.compilation.ComplicationDtoForResponse;
 import ru.practicum.dto.event.EventDtoAdminUpdate;
 import ru.practicum.dto.event.EventDtoForResponse;
 import ru.practicum.dto.event.SearchFilterForAdmin;
@@ -24,4 +26,6 @@ public interface AdministratorService {
     EventDtoForResponse updateEvent(int eventId, EventDtoAdminUpdate eventDtoAdminUpdate);
 
     List<EventDtoForResponse> getAllEventBySpecification(SearchFilterForAdmin specificationDtoForFindEvent, int from, int size);
+
+    ComplicationDtoForResponse createCompilation(CompilationDtoForCreate dtoForCreate);
 }
