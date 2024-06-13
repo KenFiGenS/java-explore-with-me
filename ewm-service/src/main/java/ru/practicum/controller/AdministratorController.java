@@ -89,4 +89,11 @@ public class AdministratorController {
         log.info("ADMIN: Запрос на создание подборки из событий под id: {}", dtoForCreate.getEvents());
         return new ResponseEntity<>(administratorService.createCompilation(dtoForCreate), null, HttpStatus.CREATED);
     }
+
+    @PatchMapping("/compilations/{compId}")
+    public ComplicationDtoForResponse updateCompilation(@PathVariable int compId,
+                                                        @Validated @RequestBody CompilationDtoForCreate dtoForCreate) {
+        log.info("ADMIN: Запрос на создание подборки из событий под id: {}", dtoForCreate.getEvents());
+        return administratorService.updateCompilation(compId, dtoForCreate);
+    }
 }

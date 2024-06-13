@@ -28,4 +28,6 @@ public interface AdministratorService {
     List<EventDtoForResponse> getAllEventBySpecification(SearchFilterForAdmin specificationDtoForFindEvent, int from, int size);
 
     ComplicationDtoForResponse createCompilation(CompilationDtoForCreate dtoForCreate);
+
+    ComplicationDtoForResponse updateCompilation(int compId, CompilationDtoForCreate dtoForCreate);
 }

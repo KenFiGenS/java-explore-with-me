@@ -19,6 +19,7 @@ import ru.practicum.dto.event.*;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.dto.user.UserMapper;
 import ru.practicum.model.category.Category;
+import ru.practicum.model.compilation.Compilation;
 import ru.practicum.model.event.Event;
 import ru.practicum.model.event.EventStatus;
 import ru.practicum.model.user.User;
@@ -28,10 +29,6 @@ import ru.practicum.repository.EventRepository;
 import ru.practicum.repository.UserRepository;
 import ru.practicum.statsDto.StatsDtoWithHitsCount;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.sql.SQLDataException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -188,6 +185,41 @@ public class AdministratorServiceImpl implements AdministratorService {
         }
         return CompilationMapper.toComplicationDtoForResponse(eventsDtoForCompilation,
                 complicationRepository.save(CompilationMapper.toCompilation(eventsForCompilation, dtoForCreate)));
+    }
+
+    @Override
+    public ComplicationDtoForResponse updateCompilation(int compId, CompilationDtoForCreate dtoForCreate) {
+        Compilation complicationForUpdate = complicationRepository.getReferenceById(compId);
+        if (dtoForCreate.getEvents() != null) {
+            List<Event> eventsForCompilation = eventRepository.findAllById(dtoForCreate.getEvents());
+            complicationForUpdate.setEvents(eventsForCompilation);
+        }
+        if (dtoForCreate.getPinned() != null) complicationForUpdate.setPinned(dtoForCreate.getPinned());
+        if (dtoForCreate.getTitle() != null) complicationForUpdate.setTitle(dtoForCreate.getTitle());
+
+        Compilation complicationAfterUpdate = complicationRepository.save(complicationForUpdate);
+        List<EventDtoForShortResponse> eventsForCompilation = complicationAfterUpdate.getEvents().stream()
+                .map(EventMapper::toEventDtoForShortResponse)
+                .collect(Collectors.toList());
+
+        List<String> uris = eventsForCompilation.stream().map(e -> ("/event/" + e.getId())).collect(Collectors.toList());
+
+        List<StatsDtoWithHitsCount> stats = statsClient.getStats(
+                LocalDateTime.of(2024, 06, 12, 12, 25 , 35),
+                LocalDateTime.of(2025, 06, 12, 15, 25 , 35),
+                uris,
+                true
+        );
+        ObjectMapper mapper = new ObjectMapper();
+        List<StatsDtoWithHitsCount> statsAfterConvert = mapper.convertValue(stats, new TypeReference<>() {});
+        for (EventDtoForShortResponse eventDto : eventsForCompilation) {
+            for (StatsDtoWithHitsCount statsDto : statsAfterConvert) {
+                if (statsDto.getUri().equals("/event/" + eventDto.getId())) {
+                    eventDto.setViews(statsDto.getHits());
+                }
+            }
+        }
+        return CompilationMapper.toComplicationDtoForResponse(eventsForCompilation, complicationAfterUpdate);
     }
 
     private List<Specification<Event>> eventFilterToSpecification(SearchFilterForAdmin filter) {
