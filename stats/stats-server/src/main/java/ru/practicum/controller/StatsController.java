@@ -3,6 +3,8 @@ package ru.practicum.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.service.StatsService;
 import ru.practicum.statsDto.StatsDtoCreate;
@@ -18,11 +20,11 @@ public class StatsController {
     private StatsService service;
 
     @PostMapping("/hit")
-    public StatsDtoCreate createHit(@RequestBody StatsDtoCreate statsDtoCreate) {
+    public ResponseEntity<StatsDtoCreate> createHit(@RequestBody StatsDtoCreate statsDtoCreate) {
         log.info("Внесение статистики о запросе ивента: {}, время: {}, от сервиса: {}", statsDtoCreate.getUri(), statsDtoCreate.getTimestamp(), statsDtoCreate.getApp());
         StatsDtoCreate statsDtoCreate1 = service.create(statsDtoCreate);
         System.out.println(statsDtoCreate1);
-        return statsDtoCreate1;
+        return new ResponseEntity<>(statsDtoCreate1, null, HttpStatus.CREATED);
     }
 
     @GetMapping("/stats")
