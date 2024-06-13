@@ -1,17 +1,17 @@
 package ru.practicum.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ru.practicum.model.Hit;
 import ru.practicum.model.HitMapper;
-import ru.practicum.model.SearchFilter;
 import ru.practicum.repository.HitsRepository;
 import ru.practicum.statsDto.StatsDtoCreate;
 import ru.practicum.statsDto.StatsDtoWithHitsCount;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,7 +41,7 @@ public class StatsServiceImpl implements StatsService {
                 }
             } else {
                 for (String currentUri : uris) {
-                    String trim1  = currentUri.replace("[", "");
+                    String trim1 = currentUri.replace("[", "");
                     String trim2 = trim1.replace("]", "");
                     result.add(new StatsDtoWithHitsCount("ewm-main-service",
                                     currentUri,
@@ -66,7 +66,7 @@ public class StatsServiceImpl implements StatsService {
             } else {
                 int count = 0;
                 for (String currentUri : uris) {
-                    String trim1  = currentUri.replace("[", "");
+                    String trim1 = currentUri.replace("[", "");
                     String trim2 = trim1.replace("]", "");
                     System.out.println(currentUri);
                     result.add(new StatsDtoWithHitsCount("ewm-main-service",
