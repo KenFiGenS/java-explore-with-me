@@ -139,7 +139,7 @@ public class PublicServiceImpl implements PublicService {
             return eventDtoListForResponse.stream()
                     .sorted(Comparator.comparing(EventDtoForResponse::getEventDate).reversed()
                             .thenComparing(EventDtoForResponse::getViews)
-                            .thenComparing(EventDtoForResponse::getId).reversed())
+                            .thenComparing(EventDtoForResponse::getId))
                     .collect(Collectors.toList());
         } else {
             return eventDtoListForResponse.stream()
