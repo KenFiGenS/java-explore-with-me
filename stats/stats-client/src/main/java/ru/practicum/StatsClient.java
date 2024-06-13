@@ -33,7 +33,7 @@ public class StatsClient {
 
     @SneakyThrows
     public List<StatsDtoWithHitsCount> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
-        String url = "?start=" + start + "&end=" + end + "&uris=" + uris + "&unique=" + unique;
+        String url = "?start=" + "2024-06-12 12:15:35" + "&end=" + "2025-06-12 12:15:35" + "&uris=" + uris + "&unique=" + unique;
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);

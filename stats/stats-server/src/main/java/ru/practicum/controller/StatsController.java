@@ -26,8 +26,8 @@ public class StatsController {
     }
 
     @GetMapping("/stats")
-    public List<StatsDtoWithHitsCount> getStats(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime start,
-                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime end,
+    public List<StatsDtoWithHitsCount> getStats(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
+                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
                                                 @RequestParam(required = false, defaultValue = "all") List<String> uris,
                                                 @RequestParam(required = false, defaultValue = "false") boolean unique) {
         log.info("Запрос статистики с параметрами: Период {} - {}, по uri {}, unique {}", start, end, uris, unique);
