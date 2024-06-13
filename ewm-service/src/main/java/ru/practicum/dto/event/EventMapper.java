@@ -2,14 +2,13 @@ package ru.practicum.dto.event;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.model.category.Category;
-import ru.practicum.model.user.User;
 import ru.practicum.model.event.Event;
 import ru.practicum.model.event.EventStatus;
 import ru.practicum.model.event.Location;
+import ru.practicum.model.user.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 @UtilityClass
 public class EventMapper {
@@ -51,7 +50,7 @@ public class EventMapper {
                 event.getParticipantLimit(),
                 event.getState() == null ? EventStatus.PENDING : event.getState(),
                 event.getCreatedOn(),
-                event.getPublishedOn() !=null ? event.getPublishedOn() : null,
+                event.getPublishedOn() != null ? event.getPublishedOn() : null,
                 new Location(event.getLat(), event.getLon()),
                 event.isRequestModeration(),
                 event.getConfirmedRequests(),

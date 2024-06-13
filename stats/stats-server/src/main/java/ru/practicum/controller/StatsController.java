@@ -1,6 +1,5 @@
 package ru.practicum.controller;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,7 +19,7 @@ public class StatsController {
 
     @PostMapping("/hit")
     public StatsDtoCreate createHit(@RequestBody StatsDtoCreate statsDtoCreate) {
-        log.info("Внесение статистики о запросе ивента: {}, время: {}, от сервиса: {}", statsDtoCreate.getUri(),statsDtoCreate.getTimestamp(), statsDtoCreate.getApp());
+        log.info("Внесение статистики о запросе ивента: {}, время: {}, от сервиса: {}", statsDtoCreate.getUri(), statsDtoCreate.getTimestamp(), statsDtoCreate.getApp());
         StatsDtoCreate statsDtoCreate1 = service.create(statsDtoCreate);
         System.out.println(statsDtoCreate1);
         return statsDtoCreate1;

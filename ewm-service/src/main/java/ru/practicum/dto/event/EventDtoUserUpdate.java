@@ -8,7 +8,6 @@ import org.hibernate.validator.constraints.Length;
 import ru.practicum.model.event.Location;
 
 import javax.validation.constraints.Future;
-import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 

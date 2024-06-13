@@ -35,8 +35,8 @@ public class StatsServiceImpl implements StatsService {
         Set<StatsDtoWithHitsCount> response = new HashSet<>();
         for (Hit hit : hitsByFilter) {
             if (unique) {
-                response.add(new StatsDtoWithHitsCount(hit.getApp(), hit.getUri(), (int) hitsByFilter.stream().
-                        filter(h -> h.getUri().equals(hit.getUri()))
+                response.add(new StatsDtoWithHitsCount(hit.getApp(), hit.getUri(), (int) hitsByFilter.stream()
+                        .filter(h -> h.getUri().equals(hit.getUri()))
                         .map(Hit::getIp)
                         .distinct()
                         .count()));

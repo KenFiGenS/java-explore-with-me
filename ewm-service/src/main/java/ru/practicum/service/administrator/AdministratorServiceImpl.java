@@ -32,7 +32,10 @@ import ru.practicum.statsDto.StatsDtoWithHitsCount;
 
 import java.sql.SQLDataException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -98,7 +101,7 @@ public class AdministratorServiceImpl implements AdministratorService {
     public CategoryDto updateCategory(int catId, CategoryDto categoryDto) {
         categoryDto.setId(catId);
         Category currentCategory = categoryRepository.getReferenceById(catId);
-        if(currentCategory.getName().equals(categoryDto.getName())) return categoryDto;
+        if (currentCategory.getName().equals(categoryDto.getName())) return categoryDto;
         return CategoryMapper.toCategoryDto(categoryRepository.save(CategoryMapper.toCategory(categoryDto)));
     }
 
@@ -106,12 +109,14 @@ public class AdministratorServiceImpl implements AdministratorService {
     @Override
     public EventDtoForResponse updateEvent(int eventId, EventDtoAdminUpdate eventDtoAdminUpdate) {
         Event eventForUpdate = eventRepository.getReferenceById(eventId);
-        if (eventDtoAdminUpdate.getAnnotation() != null) eventForUpdate.setAnnotation(eventDtoAdminUpdate.getAnnotation());
+        if (eventDtoAdminUpdate.getAnnotation() != null)
+            eventForUpdate.setAnnotation(eventDtoAdminUpdate.getAnnotation());
         if (eventDtoAdminUpdate.getCategory() != 0) {
             Category categoryForUpdate = categoryRepository.getReferenceById(eventDtoAdminUpdate.getCategory());
             eventForUpdate.setCategory(categoryForUpdate);
         }
-        if (eventDtoAdminUpdate.getDescription() != null)eventForUpdate.setDescription(eventDtoAdminUpdate.getDescription());
+        if (eventDtoAdminUpdate.getDescription() != null)
+            eventForUpdate.setDescription(eventDtoAdminUpdate.getDescription());
         if (eventDtoAdminUpdate.getEventDate() != null) {
             if (eventForUpdate.getEventDate().isAfter(eventForUpdate.getCreatedOn().plusHours(1))) {
                 eventForUpdate.setEventDate(eventDtoAdminUpdate.getEventDate());
@@ -124,9 +129,11 @@ public class AdministratorServiceImpl implements AdministratorService {
             eventForUpdate.setLat(eventDtoAdminUpdate.getLocation().getLat());
             eventForUpdate.setLon(eventDtoAdminUpdate.getLocation().getLon());
         }
-        if (eventDtoAdminUpdate.getPaid() != null)eventForUpdate.setPaid(eventDtoAdminUpdate.getPaid());
-        if (eventDtoAdminUpdate.getParticipantLimit() != 0)eventForUpdate.setParticipantLimit(eventDtoAdminUpdate.getParticipantLimit());
-        if (eventDtoAdminUpdate.getRequestModeration() != null)eventForUpdate.setRequestModeration(eventDtoAdminUpdate.getRequestModeration());
+        if (eventDtoAdminUpdate.getPaid() != null) eventForUpdate.setPaid(eventDtoAdminUpdate.getPaid());
+        if (eventDtoAdminUpdate.getParticipantLimit() != 0)
+            eventForUpdate.setParticipantLimit(eventDtoAdminUpdate.getParticipantLimit());
+        if (eventDtoAdminUpdate.getRequestModeration() != null)
+            eventForUpdate.setRequestModeration(eventDtoAdminUpdate.getRequestModeration());
         if (eventDtoAdminUpdate.getStateAction() != null && eventDtoAdminUpdate.getStateAction().equals(StateActionForAdmin.PUBLISH_EVENT)) {
             if (eventForUpdate.getState().equals(EventStatus.PENDING)) {
                 eventForUpdate.setState(EventStatus.PUBLISHED);
@@ -143,13 +150,13 @@ public class AdministratorServiceImpl implements AdministratorService {
                 eventForUpdate.setState(EventStatus.REJECTED);
             }
         }
-        if (eventDtoAdminUpdate.getTitle() != null)eventForUpdate.setTitle(eventDtoAdminUpdate.getTitle());
+        if (eventDtoAdminUpdate.getTitle() != null) eventForUpdate.setTitle(eventDtoAdminUpdate.getTitle());
         return EventMapper.toEventDtoForResponse(eventRepository.save(eventForUpdate));
     }
 
     @Override
     public List<EventDtoForResponse> getAllEventBySpecification(SearchFilterForAdmin searchFilterForAdmin, int from, int size) {
-        int currentPage = from/size;
+        int currentPage = from / size;
         Pageable page = PageRequest.of(currentPage, size);
         List<Specification<Event>> specifications = eventFilterToSpecification(searchFilterForAdmin);
         return eventRepository.findAll(specifications.stream().reduce(Specification::and).orElse(null), page).stream()
@@ -170,13 +177,14 @@ public class AdministratorServiceImpl implements AdministratorService {
         List<String> uris = eventsForCompilation.stream().map(e -> ("/event/" + e.getId())).collect(Collectors.toList());
 
         List<StatsDtoWithHitsCount> stats = statsClient.getStats(
-                LocalDateTime.of(2024, 06, 12, 12, 25 , 35),
-                LocalDateTime.of(2025, 06, 12, 15, 25 , 35),
+                LocalDateTime.of(2024, 06, 12, 12, 25, 35),
+                LocalDateTime.of(2025, 06, 12, 15, 25, 35),
                 uris,
                 true
         );
         ObjectMapper mapper = new ObjectMapper();
-        List<StatsDtoWithHitsCount> statsAfterConvert = mapper.convertValue(stats, new TypeReference<>() {});
+        List<StatsDtoWithHitsCount> statsAfterConvert = mapper.convertValue(stats, new TypeReference<>() {
+        });
         for (EventDtoForShortResponse eventDto : eventsDtoForCompilation) {
             for (StatsDtoWithHitsCount statsDto : statsAfterConvert) {
                 if (statsDto.getUri().equals("/event/" + eventDto.getId())) {
@@ -206,13 +214,14 @@ public class AdministratorServiceImpl implements AdministratorService {
         List<String> uris = eventsForCompilation.stream().map(e -> ("/event/" + e.getId())).collect(Collectors.toList());
 
         List<StatsDtoWithHitsCount> stats = statsClient.getStats(
-                LocalDateTime.of(2024, 06, 12, 12, 25 , 35),
-                LocalDateTime.of(2025, 06, 12, 15, 25 , 35),
+                LocalDateTime.of(2024, 06, 12, 12, 25, 35),
+                LocalDateTime.of(2025, 06, 12, 15, 25, 35),
                 uris,
                 true
         );
         ObjectMapper mapper = new ObjectMapper();
-        List<StatsDtoWithHitsCount> statsAfterConvert = mapper.convertValue(stats, new TypeReference<>() {});
+        List<StatsDtoWithHitsCount> statsAfterConvert = mapper.convertValue(stats, new TypeReference<>() {
+        });
         for (EventDtoForShortResponse eventDto : eventsForCompilation) {
             for (StatsDtoWithHitsCount statsDto : statsAfterConvert) {
                 if (statsDto.getUri().equals("/event/" + eventDto.getId())) {

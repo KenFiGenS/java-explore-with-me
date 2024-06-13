@@ -190,7 +190,7 @@ public class PublicServiceImpl implements PublicService {
             compilationsForResponse.add(CompilationMapper.toComplicationDtoForResponse(currentEventsList, currentComp));
         }
         List<StatsDtoWithHitsCount> statsAfterConvert = getStats(compilationsForResponse);
-        for (ComplicationDtoForResponse curComp : compilationsForResponse){
+        for (ComplicationDtoForResponse curComp : compilationsForResponse) {
             for (EventDtoForShortResponse eventDto : curComp.getEvents()) {
                 for (StatsDtoWithHitsCount statsDto : statsAfterConvert) {
                     if (statsDto.getUri().equals("/event/" + eventDto.getId())) {
@@ -242,6 +242,7 @@ public class PublicServiceImpl implements PublicService {
                 true
         );
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.convertValue(stats, new TypeReference<>() {});
+        return mapper.convertValue(stats, new TypeReference<>() {
+        });
     }
 }

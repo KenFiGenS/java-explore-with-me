@@ -19,7 +19,7 @@ public class RequestMapper {
         );
     }
 
-    public static RequestDto toRequestDto (Request request) {
+    public static RequestDto toRequestDto(Request request) {
         return new RequestDto(
                 request.getId(),
                 request.getCreated(),

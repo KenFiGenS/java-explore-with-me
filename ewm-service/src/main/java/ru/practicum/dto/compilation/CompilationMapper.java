@@ -6,7 +6,6 @@ import ru.practicum.model.compilation.Compilation;
 import ru.practicum.model.event.Event;
 
 import java.util.List;
-import java.util.Set;
 
 @UtilityClass
 public class CompilationMapper {
