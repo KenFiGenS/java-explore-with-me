@@ -22,7 +22,7 @@ public class EventMapper {
                 eventDtoCreate.getTitle(),
                 eventDtoCreate.getAnnotation(),
                 category,
-                eventDtoCreate.getPaid() == null ? false : eventDtoCreate.getPaid(),
+                eventDtoCreate.getPaid() != null && eventDtoCreate.getPaid(),
                 eventDtoCreate.getEventDate(),
                 user,
                 eventDtoCreate.getDescription(),
@@ -32,7 +32,7 @@ public class EventMapper {
                 null,
                 eventDtoCreate.getLocation().getLat(),
                 eventDtoCreate.getLocation().getLon(),
-                eventDtoCreate.getRequestModeration() == null ? true : eventDtoCreate.getRequestModeration(),
+                eventDtoCreate.getRequestModeration() == null || eventDtoCreate.getRequestModeration(),
                 0,
                 new ArrayList<>()
         );

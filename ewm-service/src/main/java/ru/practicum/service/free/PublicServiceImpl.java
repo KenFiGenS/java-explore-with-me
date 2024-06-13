@@ -28,6 +28,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.practicum.constant.Constant.DATE_TIME_FORMATTER;
@@ -108,7 +109,7 @@ public class PublicServiceImpl implements PublicService{
         List<StatsDtoWithHitsCount> stats = statsClient.getStats(
                 LocalDateTime.of(2024, 06, 12, 12, 25 , 35),
                 LocalDateTime.of(2025, 06, 12, 15, 25 , 35),
-                List.of(uri),
+                uris,
                 true
         );
         ObjectMapper mapper = new ObjectMapper();
@@ -131,7 +132,7 @@ public class PublicServiceImpl implements PublicService{
         if (sort.equals("EVENT_DATE")) {
             System.out.println(sort);
             return eventDtoListForResponse.stream()
-                    .sorted(Comparator.comparing(EventDtoForResponse::getEventDate).reversed())
+                    .sorted(Comparator.comparing(EventDtoForResponse::getEventDate).reversed().thenComparing(EventDtoForResponse::getViews))
                     .collect(Collectors.toList());
         } else {
             return eventDtoListForResponse.stream()
