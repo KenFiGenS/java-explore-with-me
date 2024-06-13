@@ -6,6 +6,7 @@ import ru.practicum.model.compilation.Compilation;
 import ru.practicum.model.event.Event;
 
 import java.util.List;
+import java.util.Set;
 
 @UtilityClass
 public class CompilationMapper {
@@ -14,7 +15,7 @@ public class CompilationMapper {
         return new Compilation(
                 compilationDto.getId(),
                 events,
-                compilationDto.getPinned() == null ? false : compilationDto.getPinned(),
+                compilationDto.getPinned() != null && compilationDto.getPinned(),
                 compilationDto.getTitle()
         );
     }

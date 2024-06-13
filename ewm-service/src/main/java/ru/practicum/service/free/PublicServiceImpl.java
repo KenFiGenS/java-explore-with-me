@@ -108,7 +108,7 @@ public class PublicServiceImpl implements PublicService{
         List<StatsDtoWithHitsCount> stats = statsClient.getStats(
                 LocalDateTime.of(2024, 06, 12, 12, 25 , 35),
                 LocalDateTime.of(2025, 06, 12, 15, 25 , 35),
-                Arrays.asList(uri),
+                List.of(uri),
                 true
         );
         ObjectMapper mapper = new ObjectMapper();
@@ -129,6 +129,7 @@ public class PublicServiceImpl implements PublicService{
         }
 
         if (sort.equals("EVENT_DATE")) {
+            System.out.println(sort);
             return eventDtoListForResponse.stream()
                     .sorted(Comparator.comparing(EventDtoForResponse::getEventDate).reversed())
                     .collect(Collectors.toList());

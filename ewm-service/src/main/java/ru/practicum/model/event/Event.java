@@ -4,10 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.model.category.Category;
+import ru.practicum.model.compilation.Compilation;
 import ru.practicum.model.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -43,4 +48,6 @@ public class Event {
     private float lon;
     private boolean requestModeration;
     private int confirmedRequests;
+    @ManyToMany(mappedBy = "events")
+    private List<Compilation> compilations = new ArrayList<>();
 }

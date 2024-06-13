@@ -162,6 +162,9 @@ public class AdministratorServiceImpl implements AdministratorService {
 
     @Override
     public ComplicationDtoForResponse createCompilation(CompilationDtoForCreate dtoForCreate) {
+        if (dtoForCreate.getEvents() == null) {
+            return new ComplicationDtoForResponse();
+        }
         List<Event> eventsForCompilation = eventRepository.findAllById(dtoForCreate.getEvents());
         List<EventDtoForShortResponse> eventsDtoForCompilation = eventsForCompilation.stream()
                 .map(EventMapper::toEventDtoForShortResponse)

@@ -8,6 +8,8 @@ import ru.practicum.model.event.EventStatus;
 import ru.practicum.model.event.Location;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 @UtilityClass
 public class EventMapper {
@@ -31,7 +33,8 @@ public class EventMapper {
                 eventDtoCreate.getLocation().getLat(),
                 eventDtoCreate.getLocation().getLon(),
                 eventDtoCreate.getRequestModeration() == null ? true : eventDtoCreate.getRequestModeration(),
-                0
+                0,
+                new ArrayList<>()
         );
     }
 

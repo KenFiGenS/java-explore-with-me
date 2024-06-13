@@ -85,8 +85,8 @@ public class AdministratorController {
     }
 
     @PostMapping("/compilations")
-    public ComplicationDtoForResponse createCompilation(@Validated @RequestBody CompilationDtoForCreate dtoForCreate) {
+    public ResponseEntity<ComplicationDtoForResponse> createCompilation(@Validated @RequestBody CompilationDtoForCreate dtoForCreate) {
         log.info("ADMIN: Запрос на создание подборки из событий под id: {}", dtoForCreate.getEvents());
-        return administratorService.createCompilation(dtoForCreate);
+        return new ResponseEntity<>(administratorService.createCompilation(dtoForCreate), null, HttpStatus.CREATED);
     }
 }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import ru.practicum.model.event.Event;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -18,9 +19,13 @@ public class Compilation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "COMPILATION_ID")
     private int id;
-    @ManyToMany
-    @Column(name = "EVENTS_ID")
-    private List<Event> events;
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(
+            name = "EVENTS_COMPILATIONS",
+            joinColumns = {@JoinColumn(name = "COMPILATION_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "EVENT_ID")}
+    )
+    private List<Event> events = new ArrayList<>();
     private boolean pinned;
     private String title;
 }
