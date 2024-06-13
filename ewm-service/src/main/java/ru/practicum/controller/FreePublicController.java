@@ -64,4 +64,12 @@ public class FreePublicController {
         log.info("PUBLIC: Выполняется запрос на получение подборки под id: {}", compId);
         return publicService.getCompilationById(compId);
     }
+
+    @GetMapping("/compilations")
+    public List<ComplicationDtoForResponse> getCompilations(@RequestParam(defaultValue = "false") boolean pinned,
+                                                            @RequestParam(defaultValue = "0") int from,
+                                                            @RequestParam(defaultValue = "10") int size) {
+        log.info("PUBLIC: Выполняется запрос на получение списка подборок по параметрам pinned: {}, from: {}, size: {}", pinned, from, size);
+        return publicService.getCompilations(pinned, from, size);
+    }
 }

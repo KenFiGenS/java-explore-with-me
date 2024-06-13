@@ -13,6 +13,7 @@ import ru.practicum.StatsClient;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.category.CategoryMapper;
 import ru.practicum.dto.compilation.CompilationDtoForCreate;
+import ru.practicum.dto.compilation.CompilationDtoForUpdate;
 import ru.practicum.dto.compilation.CompilationMapper;
 import ru.practicum.dto.compilation.ComplicationDtoForResponse;
 import ru.practicum.dto.event.*;
@@ -188,7 +189,7 @@ public class AdministratorServiceImpl implements AdministratorService {
     }
 
     @Override
-    public ComplicationDtoForResponse updateCompilation(int compId, CompilationDtoForCreate dtoForCreate) {
+    public ComplicationDtoForResponse updateCompilation(int compId, CompilationDtoForUpdate dtoForCreate) {
         Compilation complicationForUpdate = complicationRepository.getReferenceById(compId);
         if (dtoForCreate.getEvents() != null) {
             List<Event> eventsForCompilation = eventRepository.findAllById(dtoForCreate.getEvents());

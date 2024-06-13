@@ -18,4 +18,6 @@ public interface PublicService {
     List<EventDtoForResponse> getEventsBySearchFilter(SearchFilterForPublic filter, String sort, int from, int size, HttpServletRequest request);
 
     ComplicationDtoForResponse getCompilationById(int compId);
+
+    List<ComplicationDtoForResponse> getCompilations(boolean pinned, int from, int size);
 }

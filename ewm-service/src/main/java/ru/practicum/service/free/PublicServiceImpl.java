@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 import ru.practicum.HitClient;
 import ru.practicum.StatsClient;
@@ -33,13 +32,10 @@ import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static ru.practicum.constant.Constant.DATE_TIME_FORMATTER;
-
 @Service
-public class PublicServiceImpl implements PublicService{
+public class PublicServiceImpl implements PublicService {
     @Autowired
     CategoryRepository categoryRepository;
     @Autowired
@@ -79,13 +75,14 @@ public class PublicServiceImpl implements PublicService{
         String uri = request.getRequestURI();
         String ip = request.getRemoteAddr();
         List<StatsDtoWithHitsCount> stats = statsClient.getStats(
-                LocalDateTime.of(2024, 06, 12, 12, 25 , 35),
-                LocalDateTime.of(2025, 06, 12, 15, 25 , 35),
+                LocalDateTime.of(2024, 06, 12, 12, 25, 35),
+                LocalDateTime.of(2025, 06, 12, 15, 25, 35),
                 Arrays.asList(uri),
                 true
-                );
+        );
         ObjectMapper mapper = new ObjectMapper();
-        List<StatsDtoWithHitsCount> stats1 = mapper.convertValue(stats, new TypeReference<>() {});
+        List<StatsDtoWithHitsCount> stats1 = mapper.convertValue(stats, new TypeReference<>() {
+        });
         EventDtoForResponse response = EventMapper.toEventDtoForResponse(currentEvent);
         if (stats != null && !stats.isEmpty()) {
             StatsDtoWithHitsCount statsDtoWithHitsCount = stats1.get(0);
@@ -101,7 +98,7 @@ public class PublicServiceImpl implements PublicService{
                                                              int from,
                                                              int size,
                                                              HttpServletRequest request) {
-        int currentPage = from/size;
+        int currentPage = from / size;
         Pageable page = PageRequest.of(currentPage, size);
         List<Specification<Event>> specifications = eventFilterToSpecification(filter);
         List<EventDtoForResponse> eventDtoListForResponse = eventRepository.findAll(specifications.stream().reduce(Specification::or).orElse(null), page).stream()
@@ -114,13 +111,14 @@ public class PublicServiceImpl implements PublicService{
         String ip = request.getRemoteAddr();
 
         List<StatsDtoWithHitsCount> stats = statsClient.getStats(
-                LocalDateTime.of(2024, 06, 12, 12, 25 , 35),
-                LocalDateTime.of(2025, 06, 12, 15, 25 , 35),
+                LocalDateTime.of(2024, 06, 12, 12, 25, 35),
+                LocalDateTime.of(2025, 06, 12, 15, 25, 35),
                 uris,
                 true
         );
         ObjectMapper mapper = new ObjectMapper();
-        List<StatsDtoWithHitsCount> statsAfterConvert = mapper.convertValue(stats, new TypeReference<>() {});
+        List<StatsDtoWithHitsCount> statsAfterConvert = mapper.convertValue(stats, new TypeReference<>() {
+        });
         for (EventDtoForResponse eventDto : eventDtoListForResponse) {
             for (StatsDtoWithHitsCount statsDto : statsAfterConvert) {
                 if (statsDto.getUri().equals("/event/" + eventDto.getId())) {
@@ -141,7 +139,7 @@ public class PublicServiceImpl implements PublicService{
             return eventDtoListForResponse.stream()
                     .sorted(Comparator.comparing(EventDtoForResponse::getEventDate).reversed()
                             .thenComparing(EventDtoForResponse::getViews)
-                            .thenComparing(EventDtoForResponse::getId))
+                            .thenComparing(EventDtoForResponse::getId).reversed())
                     .collect(Collectors.toList());
         } else {
             return eventDtoListForResponse.stream()
@@ -160,13 +158,14 @@ public class PublicServiceImpl implements PublicService{
         List<String> uris = eventsForCompilation.stream().map(e -> ("/event/" + e.getId())).collect(Collectors.toList());
 
         List<StatsDtoWithHitsCount> stats = statsClient.getStats(
-                LocalDateTime.of(2024, 06, 12, 12, 25 , 35),
-                LocalDateTime.of(2025, 06, 12, 15, 25 , 35),
+                LocalDateTime.of(2024, 06, 12, 12, 25, 35),
+                LocalDateTime.of(2025, 06, 12, 15, 25, 35),
                 uris,
                 true
         );
         ObjectMapper mapper = new ObjectMapper();
-        List<StatsDtoWithHitsCount> statsAfterConvert = mapper.convertValue(stats, new TypeReference<>() {});
+        List<StatsDtoWithHitsCount> statsAfterConvert = mapper.convertValue(stats, new TypeReference<>() {
+        });
         for (EventDtoForShortResponse eventDto : eventsForCompilation) {
             for (StatsDtoWithHitsCount statsDto : statsAfterConvert) {
                 if (statsDto.getUri().equals("/event/" + eventDto.getId())) {
@@ -175,6 +174,33 @@ public class PublicServiceImpl implements PublicService{
             }
         }
         return CompilationMapper.toComplicationDtoForResponse(eventsForCompilation, complicationAfterUpdate);
+    }
+
+    @Override
+    public List<ComplicationDtoForResponse> getCompilations(boolean pinned, int from, int size) {
+        int currentPage = from / size;
+        Pageable pageable = PageRequest.of(currentPage, size);
+        List<Compilation> compilationsByRequestsParam = complicationRepository.findAllByPinned(pinned, pageable);
+
+        List<ComplicationDtoForResponse> compilationsForResponse = new ArrayList<>();
+        for (Compilation currentComp : compilationsByRequestsParam) {
+            List<EventDtoForShortResponse> currentEventsList = currentComp.getEvents().stream()
+                    .map(EventMapper::toEventDtoForShortResponse)
+                    .collect(Collectors.toList());
+            compilationsForResponse.add(CompilationMapper.toComplicationDtoForResponse(currentEventsList, currentComp));
+        }
+        List<StatsDtoWithHitsCount> statsAfterConvert = getStats(compilationsForResponse);
+        for (ComplicationDtoForResponse curComp : compilationsForResponse){
+            for (EventDtoForShortResponse eventDto : curComp.getEvents()) {
+                for (StatsDtoWithHitsCount statsDto : statsAfterConvert) {
+                    if (statsDto.getUri().equals("/event/" + eventDto.getId())) {
+                        eventDto.setViews(statsDto.getHits());
+                    }
+                }
+            }
+        }
+
+        return compilationsForResponse;
     }
 
     private List<Specification<Event>> eventFilterToSpecification(SearchFilterForPublic filter) {
@@ -205,5 +231,17 @@ public class PublicServiceImpl implements PublicService{
 
     private Specification<Event> rangeGrater(LocalDateTime rangeStart) {
         return ((root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get("eventDate"), rangeStart));
+    }
+
+    private List<StatsDtoWithHitsCount> getStats(List<ComplicationDtoForResponse> compilationsForResponse) {
+        List<String> uris = compilationsForResponse.stream().map(e -> ("/event/" + e.getId())).collect(Collectors.toList());
+        List<StatsDtoWithHitsCount> stats = statsClient.getStats(
+                LocalDateTime.of(2024, 06, 12, 12, 25, 35),
+                LocalDateTime.of(2025, 06, 12, 15, 25, 35),
+                uris,
+                true
+        );
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.convertValue(stats, new TypeReference<>() {});
     }
 }

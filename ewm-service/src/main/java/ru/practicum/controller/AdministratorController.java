@@ -9,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.compilation.CompilationDtoForCreate;
+import ru.practicum.dto.compilation.CompilationDtoForUpdate;
 import ru.practicum.dto.compilation.ComplicationDtoForResponse;
 import ru.practicum.dto.event.EventDtoAdminUpdate;
 import ru.practicum.dto.event.EventDtoForResponse;
@@ -92,9 +93,9 @@ public class AdministratorController {
 
     @PatchMapping("/compilations/{compId}")
     public ComplicationDtoForResponse updateCompilation(@PathVariable int compId,
-                                                        @Validated @RequestBody CompilationDtoForCreate dtoForCreate) {
+                                                        @Validated @RequestBody CompilationDtoForUpdate dtoForUpdate) {
         log.info("ADMIN: Запрос на обновление подборки из событий под id: {}", compId);
-        return administratorService.updateCompilation(compId, dtoForCreate);
+        return administratorService.updateCompilation(compId, dtoForUpdate);
     }
 
     @DeleteMapping("/compilations/{compId}")

@@ -2,6 +2,7 @@ package ru.practicum.service.administrator;
 
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.compilation.CompilationDtoForCreate;
+import ru.practicum.dto.compilation.CompilationDtoForUpdate;
 import ru.practicum.dto.compilation.ComplicationDtoForResponse;
 import ru.practicum.dto.event.EventDtoAdminUpdate;
 import ru.practicum.dto.event.EventDtoForResponse;
@@ -29,7 +30,7 @@ public interface AdministratorService {
 
     ComplicationDtoForResponse createCompilation(CompilationDtoForCreate dtoForCreate);
 
-    ComplicationDtoForResponse updateCompilation(int compId, CompilationDtoForCreate dtoForCreate);
+    ComplicationDtoForResponse updateCompilation(int compId, CompilationDtoForUpdate dtoForCreate);
 
     void removeCompilation(int compId);
 }
