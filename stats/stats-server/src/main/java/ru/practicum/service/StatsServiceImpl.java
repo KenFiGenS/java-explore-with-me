@@ -1,7 +1,9 @@
 package ru.practicum.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.model.Hit;
 import ru.practicum.model.HitMapper;
 import ru.practicum.repository.HitsRepository;
@@ -26,6 +28,9 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<StatsDtoWithHitsCount> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
+        if (start.isAfter(end)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Start after End");
+        }
         List<Hit> allHits = hitsRepository.findByTimestampIsAfterAndTimestampIsBefore(start, end);
         System.out.println(allHits);
         List<StatsDtoWithHitsCount> result = new ArrayList<>();
