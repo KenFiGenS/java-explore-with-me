@@ -132,7 +132,9 @@ public class PublicServiceImpl implements PublicService{
         if (sort.equals("EVENT_DATE")) {
             System.out.println(sort);
             return eventDtoListForResponse.stream()
-                    .sorted(Comparator.comparing(EventDtoForResponse::getEventDate).reversed().thenComparing(EventDtoForResponse::getViews))
+                    .sorted(Comparator.comparing(EventDtoForResponse::getEventDate).reversed()
+                            .thenComparing(EventDtoForResponse::getViews)
+                            .thenComparing(EventDtoForResponse::getId))
                     .collect(Collectors.toList());
         } else {
             return eventDtoListForResponse.stream()

@@ -222,6 +222,11 @@ public class AdministratorServiceImpl implements AdministratorService {
         return CompilationMapper.toComplicationDtoForResponse(eventsForCompilation, complicationAfterUpdate);
     }
 
+    @Override
+    public void removeCompilation(int compId) {
+        complicationRepository.delete(complicationRepository.getReferenceById(compId));
+    }
+
     private List<Specification<Event>> eventFilterToSpecification(SearchFilterForAdmin filter) {
         List<Specification<Event>> specifications = new ArrayList<>();
         specifications.add(filter.getUsers() == null ? null : idIn(filter.getUsers()));

@@ -30,4 +30,6 @@ public interface AdministratorService {
     ComplicationDtoForResponse createCompilation(CompilationDtoForCreate dtoForCreate);
 
     ComplicationDtoForResponse updateCompilation(int compId, CompilationDtoForCreate dtoForCreate);
+
+    void removeCompilation(int compId);
 }

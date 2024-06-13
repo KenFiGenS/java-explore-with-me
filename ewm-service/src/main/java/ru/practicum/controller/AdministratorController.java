@@ -93,7 +93,14 @@ public class AdministratorController {
     @PatchMapping("/compilations/{compId}")
     public ComplicationDtoForResponse updateCompilation(@PathVariable int compId,
                                                         @Validated @RequestBody CompilationDtoForCreate dtoForCreate) {
-        log.info("ADMIN: Запрос на создание подборки из событий под id: {}", dtoForCreate.getEvents());
+        log.info("ADMIN: Запрос на обновление подборки из событий под id: {}", compId);
         return administratorService.updateCompilation(compId, dtoForCreate);
+    }
+
+    @DeleteMapping("/compilations/{compId}")
+    public ResponseEntity removeCompilation(@PathVariable int compId) {
+        log.info("ADMIN: Запрос на удаление подборки из событий под id: {}", compId);
+        administratorService.removeCompilation(compId);
+        return new ResponseEntity(null, null, HttpStatus.NO_CONTENT);
     }
 }
