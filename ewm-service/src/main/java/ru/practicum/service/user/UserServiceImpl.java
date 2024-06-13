@@ -30,13 +30,13 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
-    EventRepository eventRepository;
+    private EventRepository eventRepository;
     @Autowired
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    RequestRepository requestRepository;
+    private RequestRepository requestRepository;
 
     @Override
     public EventDtoForResponse createEvent(int userId, EventDtoCreate eventDtoCreate) {

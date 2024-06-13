@@ -26,7 +26,7 @@ import java.util.List;
 @RequestMapping(path = "/admin")
 public class AdministratorController {
     @Autowired
-    AdministratorService administratorService;
+    private AdministratorService administratorService;
 
     @PostMapping("/users")
     public ResponseEntity<UserDto> createUser(@Validated @RequestBody UserDto userDtoCreate) {

@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping
 public class FreePublicController {
     @Autowired
-    PublicService publicService;
+    private PublicService publicService;
 
     @GetMapping("/categories")
     public List<CategoryDto> getCategories(@RequestParam(defaultValue = "0") int from,

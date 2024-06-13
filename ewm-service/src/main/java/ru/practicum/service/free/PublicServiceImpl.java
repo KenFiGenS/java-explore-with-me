@@ -37,15 +37,15 @@ import java.util.stream.Collectors;
 @Service
 public class PublicServiceImpl implements PublicService {
     @Autowired
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
     @Autowired
-    EventRepository eventRepository;
+    private EventRepository eventRepository;
     @Autowired
-    StatsClient statsClient;
+    private StatsClient statsClient;
     @Autowired
-    HitClient hitClient;
+    private HitClient hitClient;
     @Autowired
-    ComplicationRepository complicationRepository;
+    private ComplicationRepository complicationRepository;
 
     @Override
     public List<CategoryDto> getCategories(int from, int size) {
@@ -137,9 +137,7 @@ public class PublicServiceImpl implements PublicService {
         if (sort.equals("EVENT_DATE")) {
             System.out.println(sort);
             return eventDtoListForResponse.stream()
-                    .sorted(Comparator.comparing(EventDtoForResponse::getEventDate).reversed()
-                            .thenComparing(EventDtoForResponse::getViews)
-                            .thenComparing(EventDtoForResponse::getId))
+                    .sorted(Comparator.comparing(EventDtoForResponse::getId).reversed())
                     .collect(Collectors.toList());
         } else {
             return eventDtoListForResponse.stream()
