@@ -13,13 +13,18 @@ import ru.practicum.HitClient;
 import ru.practicum.StatsClient;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.category.CategoryMapper;
+import ru.practicum.dto.compilation.CompilationMapper;
+import ru.practicum.dto.compilation.ComplicationDtoForResponse;
 import ru.practicum.dto.event.EventDtoForResponse;
+import ru.practicum.dto.event.EventDtoForShortResponse;
 import ru.practicum.dto.event.EventMapper;
 import ru.practicum.dto.event.SearchFilterForPublic;
 import ru.practicum.model.category.Category;
+import ru.practicum.model.compilation.Compilation;
 import ru.practicum.model.event.Event;
 import ru.practicum.model.event.EventStatus;
 import ru.practicum.repository.CategoryRepository;
+import ru.practicum.repository.ComplicationRepository;
 import ru.practicum.repository.EventRepository;
 import ru.practicum.statsDto.StatsDtoCreate;
 import ru.practicum.statsDto.StatsDtoWithHitsCount;
@@ -43,6 +48,8 @@ public class PublicServiceImpl implements PublicService{
     StatsClient statsClient;
     @Autowired
     HitClient hitClient;
+    @Autowired
+    ComplicationRepository complicationRepository;
 
     @Override
     public List<CategoryDto> getCategories(int from, int size) {
@@ -141,6 +148,33 @@ public class PublicServiceImpl implements PublicService{
                     .sorted(Comparator.comparing(EventDtoForResponse::getViews))
                     .collect(Collectors.toList());
         }
+    }
+
+    @Override
+    public ComplicationDtoForResponse getCompilationById(int compId) {
+        Compilation complicationAfterUpdate = complicationRepository.getReferenceById(compId);
+        List<EventDtoForShortResponse> eventsForCompilation = complicationAfterUpdate.getEvents().stream()
+                .map(EventMapper::toEventDtoForShortResponse)
+                .collect(Collectors.toList());
+
+        List<String> uris = eventsForCompilation.stream().map(e -> ("/event/" + e.getId())).collect(Collectors.toList());
+
+        List<StatsDtoWithHitsCount> stats = statsClient.getStats(
+                LocalDateTime.of(2024, 06, 12, 12, 25 , 35),
+                LocalDateTime.of(2025, 06, 12, 15, 25 , 35),
+                uris,
+                true
+        );
+        ObjectMapper mapper = new ObjectMapper();
+        List<StatsDtoWithHitsCount> statsAfterConvert = mapper.convertValue(stats, new TypeReference<>() {});
+        for (EventDtoForShortResponse eventDto : eventsForCompilation) {
+            for (StatsDtoWithHitsCount statsDto : statsAfterConvert) {
+                if (statsDto.getUri().equals("/event/" + eventDto.getId())) {
+                    eventDto.setViews(statsDto.getHits());
+                }
+            }
+        }
+        return CompilationMapper.toComplicationDtoForResponse(eventsForCompilation, complicationAfterUpdate);
     }
 
     private List<Specification<Event>> eventFilterToSpecification(SearchFilterForPublic filter) {

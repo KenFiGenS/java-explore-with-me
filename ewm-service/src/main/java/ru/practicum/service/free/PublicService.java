@@ -1,6 +1,7 @@
 package ru.practicum.service.free;
 
 import ru.practicum.dto.category.CategoryDto;
+import ru.practicum.dto.compilation.ComplicationDtoForResponse;
 import ru.practicum.dto.event.EventDtoForResponse;
 import ru.practicum.dto.event.SearchFilterForPublic;
 
@@ -15,4 +16,6 @@ public interface PublicService {
     EventDtoForResponse getEventById(int id, HttpServletRequest request);
 
     List<EventDtoForResponse> getEventsBySearchFilter(SearchFilterForPublic filter, String sort, int from, int size, HttpServletRequest request);
+
+    ComplicationDtoForResponse getCompilationById(int compId);
 }

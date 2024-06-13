@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.category.CategoryDto;
+import ru.practicum.dto.compilation.ComplicationDtoForResponse;
 import ru.practicum.dto.event.EventDtoForResponse;
 import ru.practicum.dto.event.SearchFilterForPublic;
 import ru.practicum.service.free.PublicService;
@@ -56,5 +57,11 @@ public class FreePublicController {
         String ip = request.getRemoteAddr();
         log.info("PUBLIC: Выполняется запрос на получение списка событий по полям: {}, от app: {}, uri: {}, ip: {}", filter, app, uri, ip);
         return publicService.getEventsBySearchFilter(filter, sort, from, size, request);
+    }
+
+    @GetMapping("/compilations/{compId}")
+    public ComplicationDtoForResponse getCompilationById(@PathVariable int compId) {
+        log.info("PUBLIC: Выполняется запрос на получение подборки под id: {}", compId);
+        return publicService.getCompilationById(compId);
     }
 }
