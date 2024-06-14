@@ -94,8 +94,8 @@ public class UserServiceImpl implements UserService {
         }
 
         if (eventDtoUserUpdate.getLocation() != null) {
-            eventForUpdate.setLat(eventDtoUserUpdate.getLocation().getLatitudeAngle());
-            eventForUpdate.setLon(eventDtoUserUpdate.getLocation().getLongitudeAngle());
+            eventForUpdate.setLat(eventDtoUserUpdate.getLocation().getLat());
+            eventForUpdate.setLon(eventDtoUserUpdate.getLocation().getLon());
         }
         if (eventDtoUserUpdate.getPaid() != null) eventForUpdate.setPaid(eventDtoUserUpdate.getPaid());
         if (eventDtoUserUpdate.getParticipantLimit() > 0)

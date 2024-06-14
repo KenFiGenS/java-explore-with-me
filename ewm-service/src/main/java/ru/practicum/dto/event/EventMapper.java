@@ -29,8 +29,8 @@ public class EventMapper {
                 EventStatus.PENDING,
                 LocalDateTime.now(),
                 null,
-                eventDtoCreate.getLocation().getLatitudeAngle(),
-                eventDtoCreate.getLocation().getLongitudeAngle(),
+                eventDtoCreate.getLocation().getLat(),
+                eventDtoCreate.getLocation().getLon(),
                 eventDtoCreate.getRequestModeration() == null || eventDtoCreate.getRequestModeration(),
                 0,
                 new ArrayList<>()
