@@ -11,6 +11,8 @@ import ru.practicum.model.event.Location;
 
 import java.time.LocalDateTime;
 
+import static ru.practicum.constant.Constant.PATTERN_FOR_DATETIME;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,15 +22,15 @@ public class EventDtoForResponse {
     private String annotation;
     private Category category;
     private boolean paid;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = PATTERN_FOR_DATETIME)
     private LocalDateTime eventDate;
     private User initiator;
     private String description;
     private int participantLimit;
     private EventStatus state;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = PATTERN_FOR_DATETIME)
     private LocalDateTime createdOn;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = PATTERN_FOR_DATETIME)
     private LocalDateTime publishedOn;
     private Location location;
     private boolean requestModeration;

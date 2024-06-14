@@ -9,6 +9,8 @@ import ru.practicum.model.user.User;
 
 import java.time.LocalDateTime;
 
+import static ru.practicum.constant.Constant.PATTERN_FOR_DATETIME;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,7 +20,7 @@ public class EventDtoForShortResponse {
     private String annotation;
     private Category category;
     private boolean paid;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = PATTERN_FOR_DATETIME)
     private LocalDateTime eventDate;
     private User initiator;
     private int confirmedRequests;

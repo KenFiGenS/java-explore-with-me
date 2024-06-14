@@ -9,6 +9,8 @@ import ru.practicum.model.event.EventStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.practicum.constant.Constant.PATTERN_FOR_DATETIME;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,8 +18,8 @@ public class SearchFilterForAdmin {
     private List<Integer> users;
     private List<EventStatus> states;
     private List<Integer> categories;
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = PATTERN_FOR_DATETIME)
     private LocalDateTime rangeStart;
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = PATTERN_FOR_DATETIME)
     private LocalDateTime rangeEnd;
 }

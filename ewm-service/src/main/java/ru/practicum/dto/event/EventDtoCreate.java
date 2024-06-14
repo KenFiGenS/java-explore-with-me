@@ -11,6 +11,8 @@ import ru.practicum.model.event.Location;
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
+import static ru.practicum.constant.Constant.PATTERN_FOR_DATETIME;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,7 +28,7 @@ public class EventDtoCreate {
     private int category;
     private Boolean paid;
     @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = PATTERN_FOR_DATETIME)
     @Future
     private LocalDateTime eventDate;
     private User initiator;

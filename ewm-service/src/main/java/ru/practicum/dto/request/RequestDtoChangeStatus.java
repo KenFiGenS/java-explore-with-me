@@ -11,6 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestDtoChangeStatus {
-    List<Integer> requestIds;
-    RequestStatus status;
+    private List<Integer> requestIds;
+    private RequestStatus status;
 }

@@ -17,5 +17,5 @@ public class StatsDtoForGetRequest {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime end;
     private List<String> uris;
-    boolean unique;
+    private boolean unique;
 }

@@ -11,6 +11,8 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 
+import static ru.practicum.constant.Constant.PATTERN_FOR_DATETIME;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,7 +26,7 @@ public class EventDtoUserUpdate {
     @Length(min = 20, max = 7000)
     private String description;
     @Future
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = PATTERN_FOR_DATETIME)
     private LocalDateTime eventDate;
     private Location location;
     private Boolean paid;
