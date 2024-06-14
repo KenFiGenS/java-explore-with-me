@@ -127,7 +127,7 @@ public class AdministratorServiceImpl implements AdministratorService {
 
         if (eventDtoAdminUpdate.getLocation() != null) {
             eventForUpdate.setLat(eventDtoAdminUpdate.getLocation().getLatitudeAngle());
-            eventForUpdate.setLon(eventDtoAdminUpdate.getLocation().getLongitudeСoordinates());
+            eventForUpdate.setLon(eventDtoAdminUpdate.getLocation().getLongitudeAngle());
         }
         if (eventDtoAdminUpdate.getPaid() != null) eventForUpdate.setPaid(eventDtoAdminUpdate.getPaid());
         if (eventDtoAdminUpdate.getParticipantLimit() != 0)
