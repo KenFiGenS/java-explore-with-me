@@ -30,7 +30,7 @@ public class EventMapper {
                 LocalDateTime.now(),
                 null,
                 eventDtoCreate.getLocation().getLatitudeAngle(),
-                eventDtoCreate.getLocation().getLatitudeAngle(),
+                eventDtoCreate.getLocation().getLongitudeAngle(),
                 eventDtoCreate.getRequestModeration() == null || eventDtoCreate.getRequestModeration(),
                 0,
                 new ArrayList<>()
