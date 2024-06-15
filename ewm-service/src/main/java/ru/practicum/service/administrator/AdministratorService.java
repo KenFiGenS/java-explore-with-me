@@ -33,4 +33,6 @@ public interface AdministratorService {
     ComplicationDtoForResponse updateCompilation(int compId, CompilationDtoForUpdate dtoForCreate);
 
     void removeCompilation(int compId);
+
+    void removeComment(int commentId);
 }

@@ -6,22 +6,25 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import ru.practicum.dto.comment.CommentDto;
+import ru.practicum.dto.comment.CommentDtoCreate;
+import ru.practicum.dto.comment.CommentMapper;
 import ru.practicum.dto.event.*;
 import ru.practicum.dto.request.RequestDto;
 import ru.practicum.dto.request.RequestDtoAfterChangeStatus;
 import ru.practicum.dto.request.RequestDtoChangeStatus;
 import ru.practicum.dto.request.RequestMapper;
 import ru.practicum.model.category.Category;
+import ru.practicum.model.comment.Comment;
 import ru.practicum.model.event.Event;
 import ru.practicum.model.event.EventStatus;
 import ru.practicum.model.request.Request;
 import ru.practicum.model.request.RequestStatus;
 import ru.practicum.model.user.User;
-import ru.practicum.repository.CategoryRepository;
-import ru.practicum.repository.EventRepository;
-import ru.practicum.repository.RequestRepository;
-import ru.practicum.repository.UserRepository;
+import ru.practicum.repository.*;
 
+import javax.persistence.EntityNotFoundException;
+import java.sql.SQLDataException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +40,8 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     @Autowired
     private RequestRepository requestRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Override
     public EventDtoForResponse createEvent(int userId, EventDtoCreate eventDtoCreate) {
@@ -213,6 +218,40 @@ public class UserServiceImpl implements UserService {
         return requestRepository.findByRegister(userId).stream()
                 .map(RequestMapper::toRequestDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public CommentDto createComment(int userId, int eventId, CommentDtoCreate commentDto) {
+        if (!eventRepository.getReferenceById(eventId).getState().equals(EventStatus.PUBLISHED)) {
+            throw new IllegalArgumentException("Event not found");
+        }
+        return CommentMapper.toCommentDto(commentRepository.save(CommentMapper.toComment(userId, eventId, commentDto)));
+    }
+
+    @Override
+    public CommentDto updateComment(int userId, int commentId, CommentDtoCreate commentDto) {
+        Comment comment = commentRepository.getReferenceById(commentId);
+        if (comment.getText() == null) {
+            throw new IllegalArgumentException("Comment not found");
+        }
+        if (comment.getAuthor() != userId) {
+            throw new IllegalArgumentException("This comment does not belong to the user");
+        }
+        comment.setText(commentDto.getText());
+        return CommentMapper.toCommentDto(commentRepository.save(comment));
+    }
+
+    @Override
+    public void removeComment(int userId, int commentId) {
+        Comment comment = commentRepository.getReferenceById(commentId);
+        if (comment.getAuthor() != userId) {
+            throw new IllegalArgumentException("This comment does not belong to the user");
+        }
+        try {
+            commentRepository.delete(comment);
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 
     private List<Specification<Request>> requestFilterToSpecification(List<Integer> ids) {

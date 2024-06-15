@@ -1,6 +1,8 @@
 package ru.practicum.service.free;
 
 import ru.practicum.dto.category.CategoryDto;
+import ru.practicum.dto.comment.CommentDto;
+import ru.practicum.dto.comment.SearchFilterComment;
 import ru.practicum.dto.compilation.ComplicationDtoForResponse;
 import ru.practicum.dto.event.EventDtoForResponse;
 import ru.practicum.dto.event.SearchFilterForPublic;
@@ -20,4 +22,8 @@ public interface PublicService {
     ComplicationDtoForResponse getCompilationById(int compId);
 
     List<ComplicationDtoForResponse> getCompilations(boolean pinned, int from, int size);
+
+    CommentDto getCommentById(int commentId);
+
+    List<CommentDto> getCommentsBySearchFilter(SearchFilterComment eventId, int from, int size);
 }

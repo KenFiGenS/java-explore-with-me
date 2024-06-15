@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.dto.comment.CommentDto;
+import ru.practicum.dto.comment.CommentDtoCreate;
 import ru.practicum.dto.event.EventDtoCreate;
 import ru.practicum.dto.event.EventDtoForResponse;
 import ru.practicum.dto.event.EventDtoForShortResponse;
@@ -88,5 +90,29 @@ public class UserController {
                                                                        @RequestBody RequestDtoChangeStatus requestDtoChangeStatus) {
         log.info("USER: Запрос на изменение статуса заявок на участие в событии под id: {}, от организатора под id {}", eventId, userId);
         return userService.requestDtoChangeStatus(userId, eventId, requestDtoChangeStatus);
+    }
+
+    @PostMapping ("/{userId}/comments")
+    public ResponseEntity<CommentDto> createComment(@PathVariable int userId,
+                                                    @RequestParam int eventId,
+                                                    @RequestBody CommentDtoCreate commentDto) {
+        log.info("USER: Запрос на добавление комментария от пользователя под id {} к событию под id: {}", userId, eventId);
+        return new ResponseEntity<>(userService.createComment(userId, eventId, commentDto), null , HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/{userId}/comments/{commentId}")
+    public CommentDto updateComment(@PathVariable int userId,
+                                    @PathVariable int commentId,
+                                    @RequestBody CommentDtoCreate commentDto) {
+        log.info("USER: Запрос на обновление комментария под id: {}, от пользователя под id {}", commentId, userId);
+        return userService.updateComment(userId, commentId, commentDto);
+    }
+
+    @DeleteMapping("/{userId}/comments/{commentId}")
+    public ResponseEntity removeComment(@PathVariable int userId,
+                                        @PathVariable int commentId) {
+        log.info("USER: Запрос на удаление комментария под id: {}, от пользователя под id {}", commentId, userId);
+        userService.removeComment(userId, commentId);
+        return new ResponseEntity(null, null, HttpStatus.NO_CONTENT);
     }
 }
