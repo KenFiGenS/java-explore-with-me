@@ -1,7 +1,9 @@
 package ru.practicum.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.model.Hit;
 import ru.practicum.model.HitMapper;
 import ru.practicum.repository.HitsRepository;
@@ -26,7 +28,11 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<StatsDtoWithHitsCount> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
+        if (start.isAfter(end)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Start after End");
+        }
         List<Hit> allHits = hitsRepository.findByTimestampIsAfterAndTimestampIsBefore(start, end);
+        System.out.println(allHits);
         List<StatsDtoWithHitsCount> result = new ArrayList<>();
         if (!unique) {
             if (uris.get(0).equals("all")) {
@@ -40,9 +46,11 @@ public class StatsServiceImpl implements StatsService {
                 }
             } else {
                 for (String currentUri : uris) {
+                    String trim1 = currentUri.replace("[", "");
+                    String trim2 = trim1.replace("]", "");
                     result.add(new StatsDtoWithHitsCount("ewm-main-service",
                                     currentUri,
-                                    (int) allHits.stream().filter(h -> currentUri.equals(h.getUri())).count()
+                                    (int) allHits.stream().filter(h -> trim2.equals(h.getUri())).count()
                             )
                     );
                 }
@@ -61,10 +69,14 @@ public class StatsServiceImpl implements StatsService {
                     );
                 }
             } else {
+                int count = 0;
                 for (String currentUri : uris) {
+                    String trim1 = currentUri.replace("[", "");
+                    String trim2 = trim1.replace("]", "");
+                    System.out.println(currentUri);
                     result.add(new StatsDtoWithHitsCount("ewm-main-service",
                                     currentUri,
-                                    (int) allHits.stream().filter(h -> currentUri.equals(h.getUri()))
+                                    (int) allHits.stream().filter(h -> trim2.equals(h.getUri()))
                                             .map(Hit::getIp)
                                             .distinct()
                                             .count()
@@ -73,6 +85,7 @@ public class StatsServiceImpl implements StatsService {
                 }
             }
         }
+        System.out.println(result);
         return result.stream().sorted(Comparator.comparing(StatsDtoWithHitsCount::getHits).reversed()).collect(Collectors.toList());
     }
 }
