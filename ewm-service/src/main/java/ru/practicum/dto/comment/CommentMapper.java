@@ -11,8 +11,8 @@ public class CommentMapper {
     public static Comment toComment(int userId, int eventId, CommentDtoCreate dtoCreate) {
         return new Comment(
                 0,
-                userId,
                 eventId,
+                userId,
                 dtoCreate.getText(),
                 LocalDateTime.now()
         );

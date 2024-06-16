@@ -35,6 +35,7 @@ import ru.practicum.statsDto.StatsDtoWithHitsCount;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -215,6 +216,14 @@ public class PublicServiceImpl implements PublicService {
 
     @Override
     public List<CommentDto> getCommentsBySearchFilter(SearchFilterComment filter, int from, int size) {
+        if (from < 0 || size <= 0) {
+            throw new IllegalArgumentException("Invalid comment page request parameters");
+        }
+        if (filter.getEventId() == null && filter.getAuthorId() == null && filter.getCommentsId() == null && filter.getStart() == null && filter.getEnd() == null) {
+            return commentRepository.findAll().stream()
+                    .map(CommentMapper::toCommentDto)
+                    .collect(Collectors.toList());
+        }
         int currentPage = from / size;
         Pageable page = PageRequest.of(currentPage, size);
         List<Specification<Comment>> specifications = commentFilterToSpecification(filter);
@@ -228,7 +237,7 @@ public class PublicServiceImpl implements PublicService {
         specifications.add(filter.getText() == null ? null : textLikeAvailable(filter.getText()));
         specifications.add(filter.getText() == null ? null : textLikeDescription(filter.getText()));
         specifications.add(filter.getCategories() == null ? null : categoriesIn(filter.getCategories()));
-        specifications.add(filter.getRangeStart() == null ? rangeGrater(LocalDateTime.now()) : rangeGrater(filter.getRangeStart()));
+        specifications.add(filter.getRangeStart() == null ? null : rangeGrater(filter.getRangeStart()));
         specifications.add(filter.getRangeEnd() == null ? null : rangeLess(filter.getRangeEnd()));
         return specifications.stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
@@ -289,10 +298,10 @@ public class PublicServiceImpl implements PublicService {
     }
 
     private Specification<Comment> rangeLessComment(LocalDateTime rangeEnd) {
-        return ((root, query, criteriaBuilder) -> criteriaBuilder.lessThan(root.get("eventDate"), rangeEnd));
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.lessThan(root.get("createdOn"), rangeEnd));
     }
 
     private Specification<Comment> rangeGraterComment(LocalDateTime rangeStart) {
-        return ((root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get("eventDate"), rangeStart));
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get("createdOn"), rangeStart));
     }
 }

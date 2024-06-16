@@ -1,10 +1,9 @@
 package ru.practicum.dto.comment;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,8 +17,8 @@ public class SearchFilterComment {
     private Integer eventId;
     private Integer authorId;
     private List<Integer> commentsId;
-    @JsonFormat(pattern = PATTERN_FOR_DATETIME)
+    @DateTimeFormat(pattern = PATTERN_FOR_DATETIME)
     private LocalDateTime start;
-    @JsonFormat(pattern = PATTERN_FOR_DATETIME)
+    @DateTimeFormat(pattern = PATTERN_FOR_DATETIME)
     private LocalDateTime end;
 }

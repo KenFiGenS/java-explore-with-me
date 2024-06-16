@@ -12,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class CommentDtoCreate {
     @NotBlank
-    @Length(min = 3, max = 7000)
+    @Length(min = 5, max = 7000)
     private String text;
+    private int eventId;
 }
