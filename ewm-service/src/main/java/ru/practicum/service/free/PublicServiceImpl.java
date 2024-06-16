@@ -12,6 +12,9 @@ import ru.practicum.HitClient;
 import ru.practicum.StatsClient;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.category.CategoryMapper;
+import ru.practicum.dto.comment.CommentDto;
+import ru.practicum.dto.comment.CommentMapper;
+import ru.practicum.dto.comment.SearchFilterComment;
 import ru.practicum.dto.compilation.CompilationMapper;
 import ru.practicum.dto.compilation.ComplicationDtoForResponse;
 import ru.practicum.dto.event.EventDtoForResponse;
@@ -19,10 +22,12 @@ import ru.practicum.dto.event.EventDtoForShortResponse;
 import ru.practicum.dto.event.EventMapper;
 import ru.practicum.dto.event.SearchFilterForPublic;
 import ru.practicum.model.category.Category;
+import ru.practicum.model.comment.Comment;
 import ru.practicum.model.compilation.Compilation;
 import ru.practicum.model.event.Event;
 import ru.practicum.model.event.EventStatus;
 import ru.practicum.repository.CategoryRepository;
+import ru.practicum.repository.CommentRepository;
 import ru.practicum.repository.ComplicationRepository;
 import ru.practicum.repository.EventRepository;
 import ru.practicum.statsDto.StatsDtoCreate;
@@ -46,6 +51,8 @@ public class PublicServiceImpl implements PublicService {
     private HitClient hitClient;
     @Autowired
     private ComplicationRepository complicationRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Override
     public List<CategoryDto> getCategories(int from, int size) {
@@ -201,12 +208,35 @@ public class PublicServiceImpl implements PublicService {
         return compilationsForResponse;
     }
 
+    @Override
+    public CommentDto getCommentById(int commentId) {
+        return CommentMapper.toCommentDto(commentRepository.getReferenceById(commentId));
+    }
+
+    @Override
+    public List<CommentDto> getCommentsBySearchFilter(SearchFilterComment filter, int from, int size) {
+        if (from < 0 || size <= 0) {
+            throw new IllegalArgumentException("Invalid comment page request parameters");
+        }
+        if (filter.getEventId() == null && filter.getAuthorId() == null && filter.getCommentsId() == null && filter.getStart() == null && filter.getEnd() == null) {
+            return commentRepository.findAll().stream()
+                    .map(CommentMapper::toCommentDto)
+                    .collect(Collectors.toList());
+        }
+        int currentPage = from / size;
+        Pageable page = PageRequest.of(currentPage, size);
+        List<Specification<Comment>> specifications = commentFilterToSpecification(filter);
+        return commentRepository.findAll(specifications.stream().reduce(Specification::or).orElse(null), page).stream()
+                .map(CommentMapper::toCommentDto)
+                .collect(Collectors.toList());
+    }
+
     private List<Specification<Event>> eventFilterToSpecification(SearchFilterForPublic filter) {
         List<Specification<Event>> specifications = new ArrayList<>();
         specifications.add(filter.getText() == null ? null : textLikeAvailable(filter.getText()));
         specifications.add(filter.getText() == null ? null : textLikeDescription(filter.getText()));
         specifications.add(filter.getCategories() == null ? null : categoriesIn(filter.getCategories()));
-        specifications.add(filter.getRangeStart() == null ? rangeGrater(LocalDateTime.now()) : rangeGrater(filter.getRangeStart()));
+        specifications.add(filter.getRangeStart() == null ? null : rangeGrater(filter.getRangeStart()));
         specifications.add(filter.getRangeEnd() == null ? null : rangeLess(filter.getRangeEnd()));
         return specifications.stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
@@ -242,5 +272,35 @@ public class PublicServiceImpl implements PublicService {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.convertValue(stats, new TypeReference<>() {
         });
+    }
+
+    private List<Specification<Comment>> commentFilterToSpecification(SearchFilterComment filter) {
+        List<Specification<Comment>> specifications = new ArrayList<>();
+        specifications.add(filter.getEventId() == null ? null : eventIdIn(filter.getEventId()));
+        specifications.add(filter.getAuthorId() == null ? null : authorIdIn(filter.getAuthorId()));
+        specifications.add(filter.getCommentsId() == null ? null : commentsIdIn(filter.getCommentsId()));
+        specifications.add(filter.getStart() == null ? rangeGraterComment(LocalDateTime.now()) : rangeGraterComment(filter.getStart()));
+        specifications.add(filter.getEnd() == null ? null : rangeLessComment(filter.getEnd()));
+        return specifications.stream().filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    private Specification<Comment> commentsIdIn(List<Integer> commentsId) {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.in(root.get("id")).value(commentsId));
+    }
+
+    private Specification<Comment> authorIdIn(int authorId) {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.in(root.get("author")).value(authorId));
+    }
+
+    private Specification<Comment> eventIdIn(int eventId) {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.in(root.get("event")).value(eventId));
+    }
+
+    private Specification<Comment> rangeLessComment(LocalDateTime rangeEnd) {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.lessThan(root.get("createdOn"), rangeEnd));
+    }
+
+    private Specification<Comment> rangeGraterComment(LocalDateTime rangeStart) {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get("createdOn"), rangeStart));
     }
 }

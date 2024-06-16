@@ -1,5 +1,7 @@
 package ru.practicum.service.user;
 
+import ru.practicum.dto.comment.CommentDto;
+import ru.practicum.dto.comment.CommentDtoCreate;
 import ru.practicum.dto.event.EventDtoForResponse;
 import ru.practicum.dto.event.EventDtoCreate;
 import ru.practicum.dto.event.EventDtoForShortResponse;
@@ -28,4 +30,10 @@ public interface UserService {
     List<RequestDto> getRequestsByEventId(int userId, int eventId);
 
     List<RequestDto> getRequestsByRegisterId(int userId);
+
+    CommentDto createComment(int userId, int eventId, CommentDtoCreate commentDto);
+
+    CommentDto updateComment(int userId, int commentId, CommentDtoCreate commentDto);
+
+    void removeComment(int userId, int commentId);
 }

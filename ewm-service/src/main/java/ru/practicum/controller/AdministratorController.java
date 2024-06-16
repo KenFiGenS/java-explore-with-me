@@ -104,4 +104,11 @@ public class AdministratorController {
         administratorService.removeCompilation(compId);
         return new ResponseEntity(null, null, HttpStatus.NO_CONTENT);
     }
+
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity removeComment(@PathVariable int commentId) {
+        log.info("ADMIN: Запрос на удаление комментария под id: {}", commentId);
+        administratorService.removeComment(commentId);
+        return new ResponseEntity(null, null, HttpStatus.NO_CONTENT);
+    }
 }

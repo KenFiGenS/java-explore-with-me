@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.category.CategoryDto;
+import ru.practicum.dto.comment.CommentDto;
+import ru.practicum.dto.comment.SearchFilterComment;
 import ru.practicum.dto.compilation.ComplicationDtoForResponse;
 import ru.practicum.dto.event.EventDtoForResponse;
 import ru.practicum.dto.event.SearchFilterForPublic;
@@ -71,5 +73,19 @@ public class FreePublicController {
                                                             @RequestParam(defaultValue = "10") int size) {
         log.info("PUBLIC: Выполняется запрос на получение списка подборок по параметрам pinned: {}, from: {}, size: {}", pinned, from, size);
         return publicService.getCompilations(pinned, from, size);
+    }
+
+    @GetMapping("/comments/{commentId}")
+    public CommentDto getCommentById(@PathVariable int commentId) {
+        log.info("PUBLIC: Выполняется запрос на получение комментария под id: {}", commentId);
+        return publicService.getCommentById(commentId);
+    }
+
+    @GetMapping("/comments")
+    public List<CommentDto> getCommentsBySearchFilter(SearchFilterComment filterComment,
+                                                      @RequestParam(defaultValue = "0") int from,
+                                                      @RequestParam(defaultValue = "10") int size) {
+        log.info("PUBLIC: Выполняется запрос на получение комментариев по параметрам поиска: {}", filterComment);
+        return publicService.getCommentsBySearchFilter(filterComment, from, size);
     }
 }

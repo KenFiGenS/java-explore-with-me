@@ -20,14 +20,12 @@ import ru.practicum.dto.event.*;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.dto.user.UserMapper;
 import ru.practicum.model.category.Category;
+import ru.practicum.model.comment.Comment;
 import ru.practicum.model.compilation.Compilation;
 import ru.practicum.model.event.Event;
 import ru.practicum.model.event.EventStatus;
 import ru.practicum.model.user.User;
-import ru.practicum.repository.CategoryRepository;
-import ru.practicum.repository.ComplicationRepository;
-import ru.practicum.repository.EventRepository;
-import ru.practicum.repository.UserRepository;
+import ru.practicum.repository.*;
 import ru.practicum.statsDto.StatsDtoWithHitsCount;
 
 import java.sql.SQLDataException;
@@ -50,6 +48,8 @@ public class AdministratorServiceImpl implements AdministratorService {
     private ComplicationRepository complicationRepository;
     @Autowired
     private StatsClient statsClient;
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Override
     public UserDto createUser(UserDto userDtoCreate) {
@@ -235,6 +235,17 @@ public class AdministratorServiceImpl implements AdministratorService {
     @Override
     public void removeCompilation(int compId) {
         complicationRepository.delete(complicationRepository.getReferenceById(compId));
+    }
+
+    @SneakyThrows
+    @Override
+    public void removeComment(int commentId) {
+        try {
+            Comment currentComment = commentRepository.getReferenceById(commentId);
+            commentRepository.delete(currentComment);
+        } catch (RuntimeException e) {
+            throw new SQLDataException(e.getMessage());
+        }
     }
 
     private List<Specification<Event>> eventFilterToSpecification(SearchFilterForAdmin filter) {
