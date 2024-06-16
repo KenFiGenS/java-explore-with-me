@@ -23,8 +23,6 @@ import ru.practicum.model.request.RequestStatus;
 import ru.practicum.model.user.User;
 import ru.practicum.repository.*;
 
-import javax.persistence.EntityNotFoundException;
-import java.sql.SQLDataException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

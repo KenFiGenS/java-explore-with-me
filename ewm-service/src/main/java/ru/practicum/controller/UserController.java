@@ -92,11 +92,11 @@ public class UserController {
         return userService.requestDtoChangeStatus(userId, eventId, requestDtoChangeStatus);
     }
 
-    @PostMapping ("/{userId}/comments")
+    @PostMapping("/{userId}/comments")
     public ResponseEntity<CommentDto> createComment(@PathVariable int userId,
                                                     @Validated @RequestBody CommentDtoCreate commentDto) {
         log.info("USER: Запрос на добавление комментария от пользователя под id {} к событию под id: {}", userId, commentDto.getEventId());
-        return new ResponseEntity<>(userService.createComment(userId, commentDto.getEventId(), commentDto), null , HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.createComment(userId, commentDto.getEventId(), commentDto), null, HttpStatus.CREATED);
     }
 
     @PatchMapping("/{userId}/comments/{commentId}")
